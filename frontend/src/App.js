@@ -12,7 +12,7 @@ import toastError from "./errors/toastError";
 
 import lightBackground from "./assets/wa-background-light.png";
 import darkBackground from "./assets/wa-background-dark.jpg";
-import { system } from "./config.json";
+import system from "./config.json";
 
 const App = () => {
     const [locale, setLocale] = useState();
@@ -40,7 +40,7 @@ const App = () => {
                 background: {
                     default: system.color.lightTheme.palette.background.default || "#eeeeee",
                     paper: system.color.lightTheme.palette.background.paper || "#ffffff",
-                  }
+                }
             },
             backgroundImage: `url(${lightBackground})`,
         },
