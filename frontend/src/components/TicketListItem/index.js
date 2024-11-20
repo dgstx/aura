@@ -514,7 +514,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 										className={classes.Radiusdot}
 										overlap="rectangular"
 										style={{
-											backgroundColor: system.color.lightTheme.palette.primary,
+											backgroundColor: "#8c52ff",
 											height: 16,
 											padding: "5px 5px",
 											position: "inherit",
