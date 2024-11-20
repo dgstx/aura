@@ -58,54 +58,11 @@ const messages = {
           closed: {
             title: "Resolvido"
           }
-          },
+        },
         charts: {
           perDay: {
-            title: "Tickets por dia: ",
+            title: "Tickets hoje: ",
           },
-          date: {
-            title: "Filtrar"
-          }
-        },
-        chartPerUser: {
-          title: "Tickets por usuário",
-          ticket: "Ticket",
-          date: {
-            title: "Filtrar"
-          }
-        },
-        chartPerConnection: {
-          date: {
-            title: "Filtrar"
-          },
-          perConnection: {
-            title: "Tickets por conexão"
-          }
-        },
-        chartPerQueue: {
-          date: {
-            title: "Filtrar"
-          },
-          perQueue: {
-            title: "Tickets por Setor"
-          }
-        },
-        newContacts: {
-          contact: "Contatos",
-          date: {
-            start: "Data inicial",
-            end: "Data final"
-          },
-          title: "Contatos novos por dia"
-        },
-        contactsWithTickets: {
-          message: "Nenhum contato encontrado para esta data.",
-          unique: "Contato único",
-          date: {
-            start: "Data inicial",
-            end: "Data final"
-          },
-          title: "Contatos que abriram tickets no período"
         },
         tags: {
           cloudTitle: "Tags: ",
@@ -125,6 +82,7 @@ const messages = {
         },
         buttons: {
           add: "Adicionar WhatsApp",
+          restart: "Restart",
           disconnect: "desconectar",
           tryAgain: "Tentar novamente",
           qrcode: "QR CODE",
@@ -150,6 +108,7 @@ const messages = {
         },
         table: {
           id: "ID da Instância",
+          channel: "Canal",
           name: "Nome",
           number: "Número",
           status: "Status",
@@ -204,7 +163,7 @@ const messages = {
         table: {
           name: "Nome",
           whatsapp: "WhatsApp",
-          email: "E-mail",
+          channels: "Canais",
           actions: "Ações",
         },
       },
@@ -454,7 +413,7 @@ const messages = {
         appBar: {
           message: {
             hi: "Olá",
-            text: "seja bem vindo(a) ao "
+            text: "seja bem vindo ao Sistema"
           },
           user: {
             profile: "Perfil",
@@ -537,13 +496,6 @@ const messages = {
           deleteMessage: "Todos os dados do atendente serão perdidos. Os tickets abertos deste atendente serão movidos para a espera.",
         },
       },
-      company:{
-        success: "Dados da Empresa salvo com sucesso.",
-        title: "Dados da Empresa",
-        info: "Informações",
-        name: "Nome",
-        url: "Site"
-      },
       integrations: {
         success: "Integração salva com sucesso.",
         title: "Integrações",
@@ -556,6 +508,14 @@ const messages = {
           n8n: {
             title: "N8N",
             urlApiN8N: "URL API N8N"
+          },
+          hub: {
+            title: "Notificame Hub",
+            hubToken: "Token"
+          },
+          maps: {
+            title: "Api Google Maps",
+            apiMaps: "Api Key"
           }
         },
       },
@@ -589,7 +549,7 @@ const messages = {
           },
           call: {
             name: "Aceitar chamadas",
-            note: "Se desabilitado, o cliente receberá uma mensagem informando que não seu número não aceita chamadas de voz/vídeo",
+            note: "Se desabilitado, o cliente receberá uma mensagem informando que não aceita chamadas de voz/vídeo",
             options: {
               enabled: "Ativado",
               disabled: "Desativado",
@@ -604,7 +564,7 @@ const messages = {
             },
           },
           quickAnswer: {
-            name: "Edição de Respostas Rápidas por Usuaŕios",
+            name: "Respostas Rápidas",
             note: "Se habilitado, poderá editar as respostas rápidas",
             options: {
               enabled: "Ativado",
@@ -644,8 +604,8 @@ const messages = {
             },
           },
           timeCreateNewTicket: {
-            name: "Iniciar novo ticket em",
-            note: "Defina o tempo que um cliente pode reabrir um ticket, sem iniciar um novo atendimento. Durante este tempo, ele poderá reabrir o ticket e continuar a conversa no mesmo setor sem passar pelo chatbot",
+            name: "Cria novo ticket após",
+            note: "Selecione o tempo que será necessário para abrir um novo ticket, caso o cliente entre em contatos novamente",
             options: {
               "10": "10 Segundos",
               "30": "30 Segundos",
@@ -680,6 +640,9 @@ const messages = {
         placeholderClosed: "Reabra ou aceite esse ticket para enviar uma mensagem.",
         signMessage: "Assinar",
       },
+      message: {
+        edited: "Editada"
+      },
       contactDrawer: {
         header: "Dados do contato",
         buttons: {
@@ -711,12 +674,18 @@ const messages = {
         },
       },
       messageOptionsMenu: {
+        edit: "Editar",
+        history: "Histórico",
         delete: "Deletar",
         reply: "Responder",
         confirmationModal: {
           title: "Apagar mensagem?",
           message: "Esta ação não pode ser revertida.",
         },
+      },
+      messageHistoryModal: {
+        close: "Fechar",
+        title: "Histórico de edição da mensagem"
       },
       backendErrors: {
         ERR_NO_OTHER_WHATSAPP: "Deve haver pelo menos um WhatsApp padrão.",
@@ -728,6 +697,7 @@ const messages = {
         ERR_INVALID_CREDENTIALS: "Erro de autenticação. Por favor, tente novamente.",
         ERR_SENDING_WAPP_MSG: "Erro ao enviar mensagem do WhatsApp. Verifique a página de conexões.",
         ERR_DELETE_WAPP_MSG: "Não foi possível excluir a mensagem do WhatsApp.",
+        ERR_EDITING_WAPP_MSG: "Não foi possível editar a mensagem do WhatsApp.",
         ERR_OTHER_OPEN_TICKET: "Já existe um ticket aberto para este contato.",
         ERR_SESSION_EXPIRED: "Sessão expirada. Por favor entre.",
         ERR_USER_CREATION_DISABLED: "A criação do atendente foi desabilitada pelo administrador.",

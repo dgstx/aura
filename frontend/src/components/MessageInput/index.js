@@ -1,31 +1,22 @@
-import React, {
-  useState,
-  useEffect,
-  useContext,
-  useRef
-} from "react";
-import { useParams } from "react-router-dom";
-import "emoji-mart/css/emoji-mart.css";
-import { Picker } from "emoji-mart";
 import {
+  Avatar,
   CircularProgress,
   ClickAwayListener,
+  FormControlLabel,
+  Grid,
+  Hidden,
   IconButton,
   InputBase,
-  makeStyles,
-  Paper,
-  FormControlLabel,
-  Hidden,
-  Menu,
-  MenuItem,
-  Switch,
-  Grid,
-  Typography,
   List,
   ListItem,
-  ListItemText,
   ListItemAvatar,
-  Avatar
+  ListItemText,
+  makeStyles,
+  Menu,
+  MenuItem,
+  Paper,
+  Switch,
+  Typography
 } from "@material-ui/core";
 import { green } from "@material-ui/core/colors";
 import {
@@ -39,14 +30,25 @@ import {
   MoreVert,
   Send
 } from "@material-ui/icons";
-import MicRecorder from "mic-recorder-to-mp3";
 import clsx from "clsx";
-import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessageContext";
+import { Picker } from "emoji-mart";
+import "emoji-mart/css/emoji-mart.css";
+import MicRecorder from "mic-recorder-to-mp3";
+import PropTypes from "prop-types";
+import React, {
+  useContext,
+  useEffect,
+  useRef,
+  useState
+} from "react";
+import { useParams } from "react-router-dom";
 import { AuthContext } from "../../context/Auth/AuthContext";
-import { i18n } from "../../translate/i18n";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { EditMessageContext } from "../../context/EditingMessage/EditingMessageContext";
+import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessageContext";
 import toastError from "../../errors/toastError";
+import { useLocalStorage } from "../../hooks/useLocalStorage";
 import api from "../../services/api";
+import { i18n } from "../../translate/i18n";
 import RecordingTimer from "./RecordingTimer";
 
 const Mp3Recorder = new MicRecorder({ bitRate: 128 });
@@ -195,19 +197,21 @@ const useStyles = makeStyles((theme) => ({
   messageQuickAnswersWrapper: {
     margin: 0,
     position: "absolute",
-    bottom: "50px",
+    bottom: "55px",
     background: theme.palette.background.default,
     padding: 0,
     border: "none",
     left: 0,
     width: "100%",
+    maxHeight: "350px",
+    overflowY: "auto",
     "& li": {
       listStyle: "none",
       "& a": {
         display: "block",
         padding: "8px",
         textOverflow: "ellipsis",
-        overflow: "hidden",
+        overflowY: "hidden",
         maxHeight: "30px",
         "&:hover": {
           background: theme.palette.background.paper,
@@ -232,12 +236,27 @@ const MessageInput = ({ ticketStatus }) => {
   const [onDragEnter, setOnDragEnter] = useState(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const { setReplyingMessage, replyingMessage } = useContext(ReplyMessageContext);
+  const { setEditingMessage, editingMessage } = useContext(EditMessageContext);
   const { user } = useContext(AuthContext);
   const [signMessage, setSignMessage] = useLocalStorage("signOption", true);
+  const [channelType, setChannelType] = useState(null);
 
   useEffect(() => {
     inputRef.current.focus();
-  }, [replyingMessage]);
+  }, [replyingMessage, editingMessage]);
+
+  useEffect(() => {
+    const fetchChannelType = async () => {
+      try {
+        const { data } = await api.get(`/tickets/${ticketId}`);
+        setChannelType(data.whatsapp?.type);
+      } catch (err) {
+        toastError(err);
+      }
+    };
+
+    fetchChannelType();
+  }, [ticketId]);
 
   useEffect(() => {
     inputRef.current.focus();
@@ -246,8 +265,9 @@ const MessageInput = ({ ticketStatus }) => {
       setShowEmoji(false);
       setMedias([]);
       setReplyingMessage(null);
+      setEditingMessage(null);
     };
-  }, [ticketId, setReplyingMessage]);
+  }, [ticketId, setReplyingMessage, setEditingMessage]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -258,7 +278,7 @@ const MessageInput = ({ ticketStatus }) => {
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+  };
 
   const handleChangeInput = (e) => {
     setInputMessage(e.target.value);
@@ -300,9 +320,7 @@ const MessageInput = ({ ticketStatus }) => {
 
   const handleUploadMedia = async (e) => {
     setLoading(true);
-    if (e) {
-      e.preventDefault();
-    }
+    e.preventDefault();
     const formData = new FormData();
     formData.append("fromMe", true);
     medias.forEach((media) => {
@@ -310,7 +328,11 @@ const MessageInput = ({ ticketStatus }) => {
       formData.append("body", media.name);
     });
     try {
-      await api.post(`/messages/${ticketId}`, formData);
+      if (channelType !== null) {
+        await api.post(`/hub-message/${ticketId}`, formData);
+      } else {
+        await api.post(`/messages/${ticketId}`, formData);
+      }
     } catch (err) {
       toastError(err);
     }
@@ -332,7 +354,14 @@ const MessageInput = ({ ticketStatus }) => {
       quotedMsg: replyingMessage,
     };
     try {
-      await api.post(`/messages/${ticketId}`, message);
+      if (channelType !== null) {
+        await api.post(`/hub-message/${ticketId}`, message);
+      } else if (editingMessage !== null) {
+        await api.post(`/messages/edit/${editingMessage.id}`, message);
+      } else {
+        await api.post(`/messages/${ticketId}`, message);
+
+      }
     } catch (err) {
       toastError(err);
     }
@@ -340,6 +369,7 @@ const MessageInput = ({ ticketStatus }) => {
     setShowEmoji(false);
     setLoading(false);
     setReplyingMessage(null);
+    setEditingMessage(null);
   };
 
   const handleStartRecording = async () => {
@@ -390,8 +420,11 @@ const MessageInput = ({ ticketStatus }) => {
       formData.append("medias", blob, filename);
       formData.append("body", filename);
       formData.append("fromMe", true);
-
-      await api.post(`/messages/${ticketId}`, formData);
+      if (channelType !== null) {
+        await api.post(`/hub-message/${ticketId}`, formData);
+      } else {
+        await api.post(`/messages/${ticketId}`, formData);
+      }
     } catch (err) {
       toastError(err);
     }
@@ -439,7 +472,10 @@ const MessageInput = ({ ticketStatus }) => {
           aria-label="showRecorder"
           component="span"
           disabled={loading || ticketStatus !== "open"}
-          onClick={() => setReplyingMessage(null)}
+          onClick={() => {
+            setReplyingMessage(null);
+            setEditingMessage(null);
+          }}
         >
           <Clear className={classes.sendMessageIcons} />
         </IconButton>
@@ -526,7 +562,7 @@ const MessageInput = ({ ticketStatus }) => {
         <div className={onDragEnter ? classes.dropInfo : classes.dropInfoOut}>
           {i18n.t("uploads.titles.titleUploadMsgDragDrop")}
         </div>
-        {replyingMessage && renderReplyingMessage(replyingMessage)}
+        {(replyingMessage && renderReplyingMessage(replyingMessage)) || (editingMessage && renderReplyingMessage(editingMessage))}
         <div className={classes.newMessageBox}>
           <Hidden only={["sm", "xs"]}>
             <IconButton
@@ -750,5 +786,9 @@ const MessageInput = ({ ticketStatus }) => {
     );
   }
 };
+
+MessageInput.propTypes = {
+  ticketStatus: PropTypes.string
+}
 
 export default MessageInput;
