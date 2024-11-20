@@ -25,7 +25,7 @@ import {
 import { FileCopyOutlined, InfoOutlined } from "@material-ui/icons";
 import ColorLensIcon from '@material-ui/icons/ColorLens';
 import { SketchPicker } from 'react-color';
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
@@ -315,46 +315,8 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 												</MenuItem>
 											))}
 										</Select>
-
-										<div className={classes.integrationBox}>
-											<div className={classes.integrationHeader}>
-												<InfoOutlined style={{ marginRight: '10px', color: '#3f51b5' }} />
-												<strong className={classes.integrationTitle}>Integração de Canais</strong>
-											</div>
-
-											<span className={classes.integrationDescription}>
-												Para ativar <strong>Facebook</strong>, <strong>Instagram</strong>, <strong>Telegram</strong> e <strong>WebChat</strong>, cadastre-se pelo botão abaixo, depois adquirir os canais desejados usando o cupom abaixo. Insira o token da sua <strong>Account</strong> na página de Integrações para finalizar a integração.
-											</span>
-
-											<span className={classes.integrationDescription}>
-												Use o cupom abaixo para <strong>50% de desconto</strong> na compra dos canais!
-											</span>
-
-											<div className={classes.couponBox}>
-												<strong className={classes.couponText}>
-													PRESS60
-												</strong>
-												<CopyToClipboard text="PRESS60" onCopy={handleCopy}>
-													<Tooltip title={copySuccess ? "Copiado!" : "Copiar cupom"}>
-														<IconButton size="small" style={{ padding: '0' }}>
-															<FileCopyOutlined fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												</CopyToClipboard>
-											</div>
-
-											<a
-												href="https://hub.notificame.com.br/signup/registrar?from=@pressticket"
-												target="_blank"
-												rel="noopener noreferrer"
-												className={classes.registerButton}
-											>
-												REALIZE O CADASTRO AQUI
-											</a>
-										</div>
 									</div>
-								)}
-
+								)}	
 								{!isHubSelected && (
 									<>
 										<div>
