@@ -1,656 +1,190 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
-
-import {
-	useHistory,
-	useParams
-} from "react-router-dom";
-
-import {
-	format,
-	isSameDay,
-	parseISO
-} from "date-fns";
-
-import {
-	Avatar,
-	Badge,
-	Divider,
-	IconButton,
-	ListItem,
-	ListItemAvatar,
-	ListItemText,
-	makeStyles,
-	Tooltip,
-	Typography
-} from "@material-ui/core";
-
-import {
-	ClearOutlined,
-	Done,
-	Group,
-	Replay,
-	Visibility,
-	WhatsApp
-} from "@material-ui/icons";
-
-import { green } from "@material-ui/core/colors";
-
-import AcceptTicketWithouSelectQueue from "../AcceptTicketWithoutQueueModal";
-import ContactTag from "../ContactTag";
-import MarkdownWrapper from "../MarkdownWrapper";
+import React, { useEffect, useState } from "react";
+import { useHistory, useParams } from "react-router-dom";
 
 import clsx from "clsx";
-import receiveIcon from "../../assets/receive.png";
-import sendIcon from "../../assets/send.png";
-import { system } from "../../config.json";
-import { AuthContext } from "../../context/Auth/AuthContext";
+import { toast } from "react-toastify";
+import openSocket from "../../services/socket-io";
+
+import { Paper, makeStyles } from "@material-ui/core";
+
+import { EditMessageProvider } from "../../context/EditingMessage/EditingMessageContext";
+import { ReplyMessageProvider } from "../../context/ReplyingMessage/ReplyingMessageContext";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
-import { i18n } from "../../translate/i18n";
+import ContactDrawer from "../ContactDrawer";
+import MessageInput from "../MessageInput/";
+import MessagesList from "../MessagesList";
+import TicketActionButtons from "../TicketActionButtons";
+import TicketHeader from "../TicketHeader";
+import TicketInfo from "../TicketInfo";
 
+const drawerWidth = 320;
 
-const useStyles = makeStyles(theme => ({
-	ticket: {
-		position: "relative",
-	},
-	avatarContainer: {
-		position: "relative",
-	},
-	avatar: {
-		width: "50px",
-		height: "50px",
-		borderRadius: "25%"
-	},
-	badgeStyle: {
-		color: "white",
-		backgroundColor: green[500],
-		position: "absolute",
-		bottom: 0,
-		left: 0,
-		transform: "translate(-25%, -50%)",
-	},
-	groupBadgeStyle: {
-		backgroundColor: "#5D5699",
-		color: "white",
-		position: "absolute",
-		bottom: 0,
-		left: 0,
-		transform: "translate(0, -320%)",
-	},
-	pendingTicket: {
-		cursor: "unset",
-	},
-	noTicketsDiv: {
-		display: "flex",
-		height: "100px",
-		margin: 40,
-		flexDirection: "column",
-		alignItems: "center",
-		justifyContent: "center",
-	},
-	noTicketsText: {
-		textAlign: "center",
-		color: "rgb(104, 121, 146)",
-		fontSize: "14px",
-		lineHeight: "1.4",
-	},
-	noTicketsTitle: {
-		textAlign: "center",
-		fontSize: "16px",
-		fontWeight: "600",
-		margin: "0px",
-	},
-	contactNameWrapper: {
-		display: "flex",
-		justifyContent: "space-between",
-	},
-	lastMessageTime: {
-		justifySelf: "flex-end",
-	},
-	closedBadge: {
-		alignSelf: "center",
-		justifySelf: "flex-end",
-		marginRight: 32,
-		marginLeft: "auto",
-	},
-	contactLastMessage: {
-		paddingRight: 20,
-	},
-	newMessagesCount: {
-		alignSelf: "center",
-		marginRight: 8,
-		marginLeft: "auto",
-	},
-	bottomButton: {
-		position: "relative",
-		bottom: -25,
-		padding: 5
-	},
-	buttonContainer: {
-		position: "relative",
-		display: "flex",
-		justifyContent: "flex-end",
-		alignItems: "center",
-	},
-	acceptButton: {
-		position: "absolute",
-		left: "50%",
-	},
-	ticketQueueColor: {
-		flex: "none",
-		width: "8px",
-		height: "100%",
-		position: "absolute",
-		top: "0%",
-		left: "0%",
-	},
-	userTag: {
-		position: "absolute",
-		marginRight: 5,
-		right: 10,
-		bottom: 30,
-		backgroundColor: theme.palette.background.default,
-		color: theme.palette.primary.main,
-		border: "1px solid #CCC",
-		padding: 1,
-		paddingLeft: 5,
-		paddingRight: 5,
-		borderRadius: 10,
-		fontSize: "0.9em"
-	},
-	Radiusdot: {
-		"& .MuiBadge-badge": {
-			borderRadius: 2,
-			position: "inherit",
-			height: 10,
-			margin: 2,
-			padding: 3
-		},
-		"& .MuiBadge-anchorOriginTopRightRectangle": {
-			transform: "scale(1) translate(0%, -40%)",
-		},
-	},
-	secondaryContentSecond: {
-		display: 'flex',
-		marginTop: 2,
-		//marginLeft: "5px",
-		alignItems: "flex-start",
-		flexWrap: "wrap",
-		flexDirection: "row",
-		alignContent: "flex-start",
-	},
-	contactIcon: {
-		marginRight: theme.spacing(1),
-	},
-	contactName: {
-		display: 'flex',
-		alignItems: 'center',
-	},
+const useStyles = makeStyles((theme) => ({
+  root: {
+    backgroundColor: theme.palette.background.default,
+    display: "flex",
+    height: "100%",
+    position: "relative",
+    overflow: "hidden",
+  },
+
+  ticketInfo: {
+    backgroundColor: theme.palette.background.default,
+    maxWidth: "50%",
+    flexBasis: "50%",
+    [theme.breakpoints.down("sm")]: {
+      maxWidth: "80%",
+      flexBasis: "80%",
+    },
+  },
+  ticketActionButtons: {
+    backgroundColor: theme.palette.background.default,
+    maxWidth: "50%",
+    flexBasis: "50%",
+    display: "flex",
+    [theme.breakpoints.down("sm")]: {
+      maxWidth: "100%",
+      flexBasis: "100%",
+      marginBottom: "5px",
+    },
+  },
+
+  mainWrapper: {
+    flex: 1,
+    height: "100%",
+    display: "flex",
+    flexDirection: "column",
+    overflow: "hidden",
+    borderTopLeftRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderLeft: "0",
+    marginRight: -drawerWidth,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen,
+    }),
+  },
+
+  mainWrapperShift: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+    marginRight: 0,
+  },
 }));
 
-const TicketListItem = ({ ticket, userId, filteredTags }) => {
-	const classes = useStyles();
-	const history = useHistory();
-	const [loading, setLoading] = useState(false);
-	const { ticketId } = useParams();
-	const isMounted = useRef(true);
-	const { user } = useContext(AuthContext);
-	const [acceptTicketWithouSelectQueueOpen, setAcceptTicketWithouSelectQueueOpen] = useState(false);
-	const [tag, setTag] = useState([]);
-	const [uName, setUserName] = useState(null);
+const Ticket = () => {
+  const { ticketId } = useParams();
+  const history = useHistory();
+  const classes = useStyles();
 
-	useEffect(() => {
-		const delayDebounceFn = setTimeout(() => {
-			const fetchTicket = async () => {
-				try {
-					const { data } = await api.get("/tickets/" + ticket.id);
-					setTag(data?.contact?.tags);
-				} catch (err) {
-				}
-			};
-			fetchTicket();
-		}, 500);
-		return () => {
-			if (delayDebounceFn !== null) {
-				clearTimeout(delayDebounceFn);
-			}
-		};
-	}, [ticket.id, user, history]);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [contact, setContact] = useState({});
+  const [ticket, setTicket] = useState({});
 
-	useEffect(() => {
-		return () => {
-			isMounted.current = false;
-		};
-	}, []);
+  useEffect(() => {
+    setLoading(true);
+    const delayDebounceFn = setTimeout(() => {
+      const fetchTicket = async () => {
+        try {
+          const { data } = await api.get("/tickets/" + ticketId);
+          setContact(data.contact);
+          setTicket(data);
+          setLoading(false);
+        } catch (err) {
+          setLoading(false);
+          toastError(err);
+        }
+      };
+      fetchTicket();
+    }, 500);
+    return () => clearTimeout(delayDebounceFn);
+  }, [ticketId, history]);
 
-	const filterTicketByTags = () => {
-		if (!filteredTags || filteredTags.length === 0) return true;
-		if (!tag || tag.length === 0) return false;
+  useEffect(() => {
+    const socket = openSocket();
 
-		return filteredTags.every(filterTag => tag.some(t => t.id === filterTag.id));
-	};
+    socket.on("connect", () => socket.emit("joinChatBox", ticketId));
 
-	if (!filterTicketByTags()) {
-		return null;
-	}
+    socket.on("ticket", (data) => {
+      if (data.action === "update") {
+        setTicket(data.ticket);
+      }
 
-	const handleAcepptTicket = async id => {
-		setLoading(true);
-		try {
-			await api.put(`/tickets/${id}`, {
-				status: "open",
-				userId: user?.id,
-			});
-		} catch (err) {
-			setLoading(false);
-			toastError(err);
-		}
-		if (isMounted.current) {
-			setLoading(false);
-		}
-		history.push(`/tickets/${id}`);
-	};
+      if (data.action === "delete") {
+        toast.success("Ticket deleted sucessfully.");
+        history.push("/tickets");
+      }
+    });
 
-	const queueName = selectedTicket => {
-		let name = null;
-		let color = null;
-		user.queues.forEach(userQueue => {
-			if (userQueue.id === selectedTicket.queueId) {
-				name = userQueue.name;
-				color = userQueue.color;
-			}
-		});
-		return {
-			name,
-			color
-		};
-	}
+    socket.on("contact", (data) => {
+      if (data.action === "update") {
+        setContact((prevState) => {
+          if (prevState.id === data.contact?.id) {
+            return { ...prevState, ...data.contact };
+          }
+          return prevState;
+        });
+      }
+    });
 
-	const handleOpenAcceptTicketWithouSelectQueue = () => {
-		setAcceptTicketWithouSelectQueueOpen(true);
-	};
+    return () => {
+      socket.disconnect();
+    };
+  }, [ticketId, history]);
 
-	const handleReopenTicket = async id => {
-		setLoading(true);
-		try {
-			await api.put(`/tickets/${id}`, {
-				status: "open",
-				userId: user?.id,
-			});
-		} catch (err) {
-			setLoading(false);
-			toastError(err);
-		}
-		if (isMounted.current) {
-			setLoading(false);
-		}
-		history.push(`/tickets/${id}`);
-	};
+  const handleDrawerOpen = () => {
+    setDrawerOpen(true);
+  };
 
-	const handleViewTicket = async id => {
-		setLoading(true);
-		try {
-			await api.put(`/tickets/${id}`, {
-				status: "pending",
-			});
-		} catch (err) {
-			setLoading(false);
-			toastError(err);
-		}
-		if (isMounted.current) {
-			setLoading(false);
-		}
-		history.push(`/tickets/${id}`);
-	};
+  const handleDrawerClose = () => {
+    setDrawerOpen(false);
+  };
 
-	const handleClosedTicket = async id => {
-		setLoading(true);
-		try {
-			await api.put(`/tickets/${id}`, {
-				status: "closed",
-				userId: user?.id,
-			});
-		} catch (err) {
-			setLoading(false);
-			toastError(err);
-		}
-		if (isMounted.current) {
-			setLoading(false);
-		}
-		history.push(`/tickets/${id}`);
-	};
-
-	const handleSelectTicket = id => {
-		history.push(`/tickets/${id}`);
-	};
-
-	if (ticket.status === "pending") {
-
-	} else {
-		const fetchUserName = async () => {
-			try {
-				const { data } = await api.get("/users/" + ticket.userId, {
-				});
-				setUserName(data['name']);
-			} catch (err) {
-				toastError(err);
-			}
-		};
-		fetchUserName();
-	}
-
-	return (
-		<React.Fragment key={ticket.id}>
-			<AcceptTicketWithouSelectQueue
-				modalOpen={acceptTicketWithouSelectQueueOpen}
-				onClose={(e) => setAcceptTicketWithouSelectQueueOpen(false)}
-				ticketId={ticket.id}
-			/>
-			<ListItem
-				dense
-				button
-				onClick={e => {
-					if (ticket.status === "pending") return;
-					handleSelectTicket(ticket.id);
-				}}
-				selected={ticketId && +ticketId === ticket.id}
-				className={clsx(classes.ticket, {
-					[classes.pendingTicket]: ticket.status === "pending",
-				})}
-			>
-				<Tooltip
-					arrow
-					placement="right"
-					title={ticket.queue?.name || (ticket)?.name || i18n.t("ticketsList.items.queueless")}
-				>
-					<span
-						style={{ backgroundColor: ticket.queue?.color || queueName(ticket)?.color || "#7C7C7C" }}
-						className={classes.ticketQueueColor}
-					></span>
-				</Tooltip>
-
-				<ListItemAvatar className={classes.avatarContainer}>
-					<>
-						<Avatar
-							className={classes.avatar}
-							src={ticket?.contact?.profilePicUrl}
-							alt="contact_image"
-						/>
-						<Badge
-							className={classes.badgeStyle}
-							badgeContent={ticket.unreadMessages}
-							overlap="rectangular"
-							max={9999}
-							classes={{
-								badge: classes.badgeStyle,
-							}}
-						/>
-						{ticket.isGroup && (
-							<Badge
-								className={classes.groupBadgeStyle}
-								overlap="rectangular"
-								badgeContent={<Group style={{ fontSize: '1rem' }} />}
-								classes={{
-									badge: classes.groupBadgeStyle,
-								}}
-							/>
-						)}
-					</>
-				</ListItemAvatar>
-
-				<ListItemText
-					disableTypography
-					primary={
-						<span className={classes.contactName}>
-							<div>
-								{ticket.whatsappId && (
-									<Typography
-										// classNames={classes.Radiusdot}
-										component="span"
-										variant="body2"
-										color="textSecondary"
-										style={{
-											position: "absolute",
-											right: 15,
-											top: 13,
-											height: 16,
-											whiteSpace: "nowrap",
-											overflow: "hidden",
-										}}
-									>
-										{isSameDay(parseISO(ticket.updatedAt), new Date()) ? (
-											<>{format(parseISO(ticket.updatedAt), "HH:mm")}</>
-										) : (
-											<>{format(parseISO(ticket.updatedAt), "dd/MM/yyyy")}</>
-										)}
-									</Typography>
-								)}
-							</div>
-							{ticket.status === "closed" && (
-								<Badge
-									className={classes.closedBadge}
-									badgeContent={"closed"}
-									color="primary"
-								/>
-
-							)}
-							{ticket.contact.number && (
-								<Tooltip title="wwebjs" arrow placement="right" >
-									<WhatsApp fontSize="small" style={{ color: "#075e54" }} className={classes.contactIcon} />
-								</Tooltip>
-
-							)}
-							<Typography
-								noWrap
-								component="span"
-								variant="body2"
-								color="textPrimary"
-							>
-								{ticket.contact.name}
-							</Typography>
-						</span>
-					}
-					secondary={
-						<div>
-							<Typography
-								className={classes.contactLastMessage}
-								noWrap
-								component="span"
-								variant="body2"
-								color="textSecondary"
-							>
-								{(() => {
-									if (ticket.lastMessage) {
-										if (ticket.lastMessage.includes("🢅") === true) {
-											return (
-												<img src={sendIcon} alt="Msg Enviada" width="12px" />
-											)
-										} else if (ticket.lastMessage.includes("🢇") === true) {
-
-											return (
-												<img src={receiveIcon} alt="Msg Recebida" width="12px" />
-											)
-										}
-									}
-								})()}
-								{ticket.lastMessage ? (
-									<MarkdownWrapper>{ticket.lastMessage.slice(0, 45).replace("🢇", "")
-										.replace("🢅", "") + (ticket.lastMessage.length > 45 ? " ..." : "").replace("🢇", "")
-											.replace("🢅", "")}</MarkdownWrapper>
-								) : (
-									<br />
-								)}
-							</Typography>
-
-							<br></br>
-							{ticket.whatsappId && (
-								<Tooltip title={i18n.t("ticketsList.items.connection")}>
-									<Badge
-										className={classes.Radiusdot}
-										overlap="rectangular"
-										style={{
-											backgroundColor: system.color.lightTheme.palette.primary,
-											height: 16,
-											padding: "5px 5px",
-											position: "inherit",
-											borderRadius: "3px",
-											color: "white",
-											marginRight: "5px",
-											marginBottom: "3px",
-
-										}}
-										badgeContent={ticket.whatsapp?.name || i18n.t("ticketsList.items.user")}
-
-									/>
-
-								</Tooltip>
-							)}
-
-							{ticket.queueId && (
-								<Tooltip title={i18n.t("ticketsList.items.queue")}>
-									<Badge
-										className={classes.Radiusdot}
-										overlap="rectangular"
-										style={{
-											backgroundColor: ticket.queue?.color || "#7C7C7C",
-											height: 16,
-											padding: "5px 5px",
-											position: "inherit",
-											borderRadius: "3px",
-											color: "white",
-											marginRight: "5px",
-											marginBottom: "3px",
-
-										}}
-										badgeContent={ticket.queue?.name || "No sector"}
-									/>
-								</Tooltip>
-							)}
-
-							{uName && (
-								<Tooltip title={i18n.t("ticketsList.items.user")}>
-									<Badge
-										className={classes.Radiusdot}
-										overlap="rectangular"
-										style={{
-											backgroundColor: "black",
-											height: 16,
-											padding: "5px 5px",
-											position: "inherit",
-											borderRadius: "3px",
-											color: "white",
-											marginRight: "5px",
-											marginBottom: "3px",
-
-										}}
-										badgeContent={uName}
-									/>
-								</Tooltip>
-							)}
-
-							<br></br>
-							<Tooltip title={i18n.t("ticketsList.items.tags")}>
-								<span className={classes.secondaryContentSecond}>
-									{
-										tag?.map((tag) => {
-											return (
-												<ContactTag tag={tag} key={`ticket-contact-tag-${ticket.id}-${tag.id}`} />
-											);
-										})
-									}
-								</span>
-							</Tooltip>
-						</div>
-					}
-				/>
-				<div className={classes.buttonContainer}>
-					{(ticket.status === "pending" && (ticket.queue === null || ticket.queue === undefined)) && (
-						<Tooltip title={i18n.t("ticketsList.items.accept")}>
-							<IconButton
-								className={classes.bottomButton}
-								color="primary"
-								onClick={e => handleOpenAcceptTicketWithouSelectQueue()}
-								loading={loading}>
-								<Done />
-							</IconButton>
-						</Tooltip>
-					)}
-
-					{ticket.status === "pending" && ticket.queue !== null && (
-						<Tooltip title={i18n.t("ticketsList.items.accept")}>
-							<IconButton
-								className={classes.bottomButton}
-								color="primary"
-								onClick={e => handleAcepptTicket(ticket.id)} >
-								<Done />
-							</IconButton>
-						</Tooltip>
-					)}
-
-					{ticket.status === "pending" && (
-						<Tooltip title={i18n.t("ticketsList.items.spy")}>
-							<IconButton
-								className={classes.bottomButton}
-								color="primary"
-								onClick={e => handleViewTicket(ticket.id)} >
-								<Visibility />
-							</IconButton>
-						</Tooltip>
-					)}
-
-					{ticket.status === "pending" && (
-						<Tooltip title={i18n.t("ticketsList.items.close")}>
-							<IconButton
-								className={classes.bottomButton}
-								color="primary"
-								onClick={e => handleClosedTicket(ticket.id)} >
-								<ClearOutlined />
-							</IconButton>
-						</Tooltip>
-					)}
-
-					{ticket.status === "open" && (
-						<Tooltip title={i18n.t("ticketsList.items.return")}>
-							<IconButton
-								className={classes.bottomButton}
-								color="primary"
-								onClick={e => handleViewTicket(ticket.id)} >
-								<Replay />
-							</IconButton>
-						</Tooltip>
-					)}
-
-					{ticket.status === "open" && (
-						<Tooltip title={i18n.t("ticketsList.items.close")}>
-							<IconButton
-								className={classes.bottomButton}
-								color="primary"
-								onClick={e => handleClosedTicket(ticket.id)} >
-								<ClearOutlined />
-							</IconButton>
-						</Tooltip>
-					)}
-
-					{ticket.status === "closed" && (
-						<IconButton
-							className={classes.bottomButton}
-							color="primary"
-							onClick={e => handleReopenTicket(ticket.id)} >
-							<Replay />
-						</IconButton>
-					)}
-
-					{ticket.status === "closed" && (
-						<IconButton
-							className={classes.bottomButton}
-							color="primary" >
-						</IconButton>
-					)}
-				</div>
-			</ListItem>
-			<Divider variant="inset" component="li" />
-		</React.Fragment>
-	);
+  return (
+    <div className={classes.root} id="drawer-container">
+      <Paper
+        variant="outlined"
+        elevation={0}
+        className={clsx(classes.mainWrapper, {
+          [classes.mainWrapperShift]: drawerOpen,
+        })}
+      >
+        <TicketHeader loading={loading}>
+          <div className={classes.ticketInfo}>
+            <TicketInfo
+              contact={contact}
+              ticket={ticket}
+              onClick={handleDrawerOpen}
+            />
+          </div>
+          <div className={classes.ticketActionButtons}>
+            <TicketActionButtons ticket={ticket} />
+          </div>
+        </TicketHeader>
+        <ReplyMessageProvider>
+          <EditMessageProvider>
+            <MessagesList
+              ticketId={ticketId}
+              isGroup={ticket.isGroup}
+            ></MessagesList>
+            <MessageInput ticketStatus={ticket.status} />
+          </EditMessageProvider>
+        </ReplyMessageProvider>
+      </Paper>
+      <ContactDrawer
+        open={drawerOpen}
+        handleDrawerClose={handleDrawerClose}
+        contact={contact}
+        loading={loading}
+      />
+    </div>
+  );
 };
 
-export default TicketListItem;
+export default Ticket;
