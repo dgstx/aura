@@ -40,7 +40,7 @@ const App = () => {
                 background: {
                     default: system.color.lightTheme.palette.background.default || "#eeeeee",
                     paper: system.color.lightTheme.palette.background.paper || "#ffffff",
-                  },
+                  }
             },
             backgroundImage: `url(${lightBackground})`,
         },
