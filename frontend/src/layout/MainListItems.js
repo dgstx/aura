@@ -12,17 +12,17 @@ import {
 } from "@material-ui/core";
 
 import {
-    DevicesIcon,
-    DeveloperModeRoundedIcon,
-    PeopleAltRoundedIcon,
+    AccountTreeOutlined,
+    Code,
     ContactPhoneOutlined,
     DashboardOutlined,
-    SettingsEthernetRoundedIcon,
+    DeveloperModeOutlined,
     LocalOffer,
     MenuBook,
+    PeopleAltOutlined,
     QuestionAnswerOutlined,
     SettingsOutlined,
-    AccountTreeRoundedIcon,
+    SyncAlt,
     VpnKeyRounded,
     WhatsApp
 } from "@material-ui/icons";
@@ -146,7 +146,7 @@ const MainListItems = (props) => {
                             primary={i18n.t("mainDrawer.listItems.connections")}
                             icon={
                                 <Badge badgeContent={connectionWarning ? "!" : 0} color="error" overlap="rectangular" >
-                                    <DevicesIconPeopleAltRoundedIcon />
+                                    <SyncAlt />
                                 </Badge>
                             }
                         />
@@ -158,12 +158,12 @@ const MainListItems = (props) => {
                         <ListItemLink
                             to="/queues"
                             primary={i18n.t("mainDrawer.listItems.queues")}
-                            icon={<AccountTreeRoundedIcon />}
+                            icon={<AccountTreeOutlined />}
                         />
                         <ListItemLink
                             to="/Integrations"
                             primary={i18n.t("mainDrawer.listItems.integrations")}
-                            icon={<SettingsEthernetRoundedIcon />}
+                            icon={<DeveloperModeOutlined />}
                         />
                         <ListItemLink
                             to="/settings"
@@ -177,7 +177,7 @@ const MainListItems = (props) => {
                         <ListItemLink
                             to="/api"
                             primary={i18n.t("mainDrawer.listItems.api")}
-                            icon={<DeveloperModeRoundedIcon />}
+                            icon={<Code />}
                         />
                         <ListItemLink
                             href="https://docs.meuhub.com.br/categoria/wasap/"
