@@ -460,7 +460,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								</Tooltip>
 							)}
 							{ticket.contact.number && (
-								<Tooltip title="wwebjs" arrow placement="right" >
+								<Tooltip title="WhatsApp" arrow placement="right" >
 									<WhatsApp fontSize="small" style={{ color: "#075e54" }} className={classes.contactIcon} />
 								</Tooltip>
 
