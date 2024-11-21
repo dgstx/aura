@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 500,
         color: "#fff",
         boxShadow: "0 2px 5p rgba(0, 0, 0, 0.2)",
-        borderRadius: "8px",
+        borderRadius: "19px",
         transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
         '&:hover': {
             transform: "scale(1.05)",
