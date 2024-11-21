@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react";
 import MenuItem from "@material-ui/core/MenuItem";
 
 import { Menu } from "@material-ui/core";
+import PropTypes from "prop-types";
 import { EditMessageContext } from "../../context/EditingMessage/EditingMessageContext";
 import { ReplyMessageContext } from "../../context/ReplyingMessage/ReplyingMessageContext";
 import toastError from "../../errors/toastError";
@@ -113,6 +114,5 @@ MessageOptionsMenu.propTypes = {
   handleClose: PropTypes.func.isRequired,
   anchorEl: PropTypes.object
 }
-
 
 export default MessageOptionsMenu;
