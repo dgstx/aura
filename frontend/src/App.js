@@ -40,7 +40,7 @@ const App = () => {
         toolbarIcon: { main: system?.color?.lightTheme?.toolbarIcon || "#ffffff" },
         divide: { main: system?.color?.lightTheme?.divide || "#E0E0E0" },
         background: {
-          default: system?.color?.lightTheme?.palette?.background?.default || "#eeeeee",
+          default: system?.color?.lightTheme?.palette?.background?.default || "#f9f9f9",
           paper: system?.color?.lightTheme?.palette?.background?.paper || "#ffffff",
         },
       },
