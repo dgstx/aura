@@ -3,14 +3,11 @@ import { QueryInterface } from "sequelize";
 module.exports = {
   up: (queryInterface: QueryInterface) => {
     return queryInterface.bulkInsert(
-      "Users",
+      "Integrations",
       [
         {
-          name: "Press-Ticket",
-          email: "admin@pressticket.com.br",
-          passwordHash: "$2a$08$WaEmpmFDD/XkDqorkpQ42eUZozOqRCPkPcTkmHHMyuTGUOkI8dHsq",
-          profile: "admin",
-          tokenVersion: 0,
+          key: "apiMaps",
+          value: "",
           createdAt: new Date(),
           updatedAt: new Date()
         }
@@ -20,6 +17,6 @@ module.exports = {
   },
 
   down: (queryInterface: QueryInterface) => {
-    return queryInterface.bulkDelete("Users", {});
+    return queryInterface.bulkDelete("Integrations", {});
   }
 };

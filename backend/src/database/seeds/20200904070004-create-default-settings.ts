@@ -25,7 +25,7 @@ module.exports = {
         },
         {
           key: "sideMenu",
-          value: "enabled",
+          value: "disabled",
           createdAt: new Date(),
           updatedAt: new Date()
         },
