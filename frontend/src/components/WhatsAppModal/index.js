@@ -277,21 +277,6 @@ const WhatsAppModal = ({ open, onClose, whatsAppId }) => {
 											/>
 										</>
 									)}
-									<FormControlLabel
-										control={
-											<Switch
-												checked={isHubSelected}
-												onChange={() => {
-													setIsHubSelected(prev => !prev);
-													if (!isHubSelected) {
-														fetchChannels();
-													}
-												}}
-												color="primary"
-											/>
-										}
-										label="Ativar Canais"
-									/>
 								</div>
 
 								{isHubSelected && (
