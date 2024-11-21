@@ -14,6 +14,7 @@ import {
 import {
 	Avatar,
 	Badge,
+	Chip,
 	Divider,
 	IconButton,
 	ListItem,
@@ -204,20 +205,29 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 	const [uName, setUserName] = useState(null);
 
 	useEffect(() => {
+		isMounted.current = true;
+
 		const delayDebounceFn = setTimeout(() => {
 			const fetchTicket = async () => {
+				if (!isMounted.current) return;
+
 				try {
 					const { data } = await api.get("/tickets/" + ticket.id);
-					setTag(data?.contact?.tags);
+					if (isMounted.current) {
+						setTag(data?.contact?.tags);
+					}
 				} catch (err) {
+					if (isMounted.current) {
+						toastError(err);
+					}
 				}
 			};
 			fetchTicket();
 		}, 500);
+
 		return () => {
-			if (delayDebounceFn !== null) {
-				clearTimeout(delayDebounceFn);
-			}
+			clearTimeout(delayDebounceFn);
+			isMounted.current = false;
 		};
 	}, [ticket.id, user, history]);
 
@@ -460,7 +470,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								</Tooltip>
 							)}
 							{ticket.contact.number && (
-								<Tooltip title="WhatsApp" arrow placement="right" >
+								<Tooltip title="wwebjs" arrow placement="right" >
 									<WhatsApp fontSize="small" style={{ color: "#075e54" }} className={classes.contactIcon} />
 								</Tooltip>
 
@@ -510,65 +520,42 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 							<br></br>
 							{ticket.whatsappId && (
 								<Tooltip title={i18n.t("ticketsList.items.connection")}>
-									<Badge
+									<Chip
 										className={classes.Radiusdot}
-										overlap="rectangular"
 										style={{
-											backgroundColor: "#8c52ff",
+											backgroundColor: system.color.lightTheme.palette.primary,
+											fontSize: "0.8em",
+											fontWeight: "bold",
 											height: 16,
-											padding: "5px 5px",
+											padding: "5px 0px",
 											position: "inherit",
 											borderRadius: "3px",
 											color: "white",
 											marginRight: "5px",
 											marginBottom: "3px",
-
 										}}
-										badgeContent={ticket.whatsapp?.name || i18n.t("ticketsList.items.user")}
-
-									/>
-
-								</Tooltip>
-							)}
-
-							{ticket.queueId && (
-								<Tooltip title={i18n.t("ticketsList.items.queue")}>
-									<Badge
-										className={classes.Radiusdot}
-										overlap="rectangular"
-										style={{
-											backgroundColor: ticket.queue?.color || "#7C7C7C",
-											height: 16,
-											padding: "5px 5px",
-											position: "inherit",
-											borderRadius: "3px",
-											color: "white",
-											marginRight: "5px",
-											marginBottom: "3px",
-
-										}}
-										badgeContent={ticket.queue?.name || "No sector"}
+										label={(ticket.whatsapp?.name || i18n.t("ticketsList.items.user")).toUpperCase()}
 									/>
 								</Tooltip>
 							)}
 
 							{uName && (
 								<Tooltip title={i18n.t("ticketsList.items.user")}>
-									<Badge
+									<Chip
 										className={classes.Radiusdot}
-										overlap="rectangular"
 										style={{
 											backgroundColor: "black",
+											fontSize: "0.8em",
+											fontWeight: "bold",
 											height: 16,
-											padding: "5px 5px",
+											padding: "5px 0px",
 											position: "inherit",
 											borderRadius: "3px",
 											color: "white",
 											marginRight: "5px",
 											marginBottom: "3px",
-
 										}}
-										badgeContent={uName}
+										label={uName.toUpperCase()}
 									/>
 								</Tooltip>
 							)}
@@ -595,7 +582,8 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								className={classes.bottomButton}
 								color="primary"
 								onClick={e => handleOpenAcceptTicketWithouSelectQueue()}
-								loading={loading}>
+								loading={loading ? "true" : undefined}
+							>
 								<Done />
 							</IconButton>
 						</Tooltip>
