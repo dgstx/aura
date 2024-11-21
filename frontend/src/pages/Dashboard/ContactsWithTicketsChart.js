@@ -113,7 +113,7 @@ const ContactsWithTicketsChart = () => {
                         </Label>
                     </YAxis>
                     <Tooltip content={<CustomTooltip />} />
-                    <Bar dataKey="count" fill={theme.palette.primary.main} />
+                    <Bar dataKey="Qtd" fill={theme.palette.primary.main} />
                 </BarChart>
             </ResponsiveContainer>
         </React.Fragment>
