@@ -1,30 +1,31 @@
 import React, { useContext, useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
-
-import {
-    Badge,
+import { 
+    Drawer, 
+    List, 
+    ListItem, 
+    ListItemIcon, 
+    ListItemText, 
+    makeStyles, 
+    Typography, 
+    Badge, 
     Divider,
-    ListItem,
-    ListItemIcon,
-    ListItemText,
-    ListSubheader,
-    makeStyles
+    ListSubheader
 } from "@material-ui/core";
-
-import {
-    AccountTreeOutlined,
-    Code,
-    ContactPhoneOutlined,
-    DashboardOutlined,
-    DeveloperModeOutlined,
+import { 
+    Dashboard as DashboardIcon,
+    WhatsApp,
+    ContactPhone,
+    QuestionAnswer,
     LocalOffer,
+    Sync,
+    People,
+    AccountTree,
+    DeveloperMode,
+    Settings,
+    Code,
     MenuBook,
-    PeopleAltOutlined,
-    QuestionAnswerOutlined,
-    SettingsOutlined,
-    SyncAlt,
-    VpnKeyRounded,
-    WhatsApp
+    VpnKey
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -33,166 +34,190 @@ import { AuthContext } from "../context/Auth/AuthContext";
 import { Can } from "../components/Can";
 
 const useStyles = makeStyles(theme => ({
+    drawer: {
+        width: 280,
+        flexShrink: 0,
+    },
+    drawerPaper: {
+        width: 280,
+        backgroundColor: theme.palette.background.default,
+        borderRight: `1px solid ${theme.palette.divider}`,
+    },
+    toolbar: {
+        ...theme.mixins.toolbar,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+    },
+    listItem: {
+        borderRadius: 8,
+        margin: theme.spacing(0.5, 1),
+        transition: 'all 0.3s ease',
+        '&:hover': {
+            backgroundColor: theme.palette.action.hover,
+            transform: 'translateX(8px)',
+        },
+    },
+    listItemActive: {
+        backgroundColor: theme.palette.action.selected,
+        '&:hover': {
+            backgroundColor: theme.palette.action.selected,
+        },
+    },
     icon: {
-        color: theme.palette.secondary.main
+        color: theme.palette.text.secondary,
+        marginRight: theme.spacing(2),
     },
-    li: {
-        backgroundColor: theme.palette.menuItens.main
-    },
-    sub: {
-        backgroundColor: theme.palette.sub.main
+    subheader: {
+        color: theme.palette.text.secondary,
+        fontWeight: 600,
+        textTransform: 'uppercase',
+        letterSpacing: '1px',
     },
     divider: {
-        backgroundColor: theme.palette.divide.main
-    }
+        margin: theme.spacing(1, 0),
+    },
 }));
 
-function ListItemLink(props) {
-    const { icon, primary, to, href, className } = props;
+const MainListItems = ({ drawerClose }) => {
     const classes = useStyles();
-
-    if (to) {
-        return (
-            <li className={classes.li}>
-                <ListItem button component={RouterLink} to={to} className={className}>
-                    {icon ? <ListItemIcon className={classes.icon}>{icon}</ListItemIcon> : null}
-                    <ListItemText primary={primary} />
-                </ListItem>
-            </li>
-        );
-    }
-
-    if (href) {
-        return (
-            <li className={classes.li}>
-                <ListItem button component="a" href={href} className={className} target="_blank" rel="noopener noreferrer">
-                    {icon ? <ListItemIcon className={classes.icon}>{icon}</ListItemIcon> : null}
-                    <ListItemText primary={primary} />
-                </ListItem>
-            </li>
-        );
-    }
-
-    return null;
-}
-
-const MainListItems = (props) => {
-    const { drawerClose } = props;
     const { whatsApps } = useContext(WhatsAppsContext);
     const { user } = useContext(AuthContext);
     const [connectionWarning, setConnectionWarning] = useState(false);
-    const classes = useStyles();
 
     useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            if (whatsApps.length > 0) {
-                const offlineWhats = whatsApps.filter((whats) => {
-                    return (
-                        whats.status === "qrcode" ||
-                        whats.status === "PAIRING" ||
-                        whats.status === "DISCONNECTED" ||
-                        whats.status === "TIMEOUT" ||
-                        whats.status === "OPENING"
-                    );
-                });
-                if (offlineWhats.length > 0) {
-                    setConnectionWarning(true);
-                } else {
-                    setConnectionWarning(false);
-                }
-            }
+        const timer = setTimeout(() => {
+            const offlineWhats = whatsApps.filter(whats => 
+                ['qrcode', 'PAIRING', 'DISCONNECTED', 'TIMEOUT', 'OPENING'].includes(whats.status)
+            );
+            setConnectionWarning(offlineWhats.length > 0);
         }, 2000);
-        return () => clearTimeout(delayDebounceFn);
+        return () => clearTimeout(timer);
     }, [whatsApps]);
 
+    const MenuItem = ({ to, icon, primary, href, warning }) => {
+        const Icon = () => (
+            warning ? (
+                <Badge badgeContent="!" color="error" overlap="rectangular">
+                    {icon}
+                </Badge>
+            ) : icon
+        );
+
+        const props = href 
+            ? { component: "a", href, target: "_blank", rel: "noopener noreferrer" }
+            : { component: RouterLink, to };
+
+        return (
+            <ListItem 
+                button 
+                {...props}
+                className={classes.listItem}
+                classes={{ selected: classes.listItemActive }}
+            >
+                <ListItemIcon className={classes.icon}>
+                    <Icon />
+                </ListItemIcon>
+                <ListItemText 
+                    primary={
+                        <Typography variant="body2" color="textPrimary">
+                            {primary}
+                        </Typography>
+                    } 
+                />
+            </ListItem>
+        );
+    };
+
     return (
-        <div onClick={drawerClose}>
-            <ListItemLink
-                to="/"
-                primary="Dashboard"
-                icon={<DashboardOutlined />}
+        <List>
+            <MenuItem 
+                to="/" 
+                icon={<DashboardIcon />} 
+                primary="Dashboard" 
             />
-            <ListItemLink
-                to="/tickets"
-                primary={i18n.t("mainDrawer.listItems.tickets")}
-                icon={<WhatsApp />}
+            <MenuItem 
+                to="/tickets" 
+                icon={<WhatsApp />} 
+                primary={i18n.t("mainDrawer.listItems.tickets")} 
             />
-            <ListItemLink
-                to="/contacts"
-                primary={i18n.t("mainDrawer.listItems.contacts")}
-                icon={<ContactPhoneOutlined />}
+            <MenuItem 
+                to="/contacts" 
+                icon={<ContactPhone />} 
+                primary={i18n.t("mainDrawer.listItems.contacts")} 
             />
-            <ListItemLink
-                to="/quickAnswers"
-                primary={i18n.t("mainDrawer.listItems.quickAnswers")}
-                icon={<QuestionAnswerOutlined />}
+            <MenuItem 
+                to="/quickAnswers" 
+                icon={<QuestionAnswer />} 
+                primary={i18n.t("mainDrawer.listItems.quickAnswers")} 
             />
-            <ListItemLink
-                to="/tags"
-                primary={i18n.t("mainDrawer.listItems.tags")}
-                icon={<LocalOffer />}
+            <MenuItem 
+                to="/tags" 
+                icon={<LocalOffer />} 
+                primary={i18n.t("mainDrawer.listItems.tags")} 
             />
+
             <Can
                 role={user.profile}
                 perform="drawer-admin-items:view"
                 yes={() => (
                     <>
                         <Divider className={classes.divider} />
-                        <ListSubheader inset className={classes.sub}>
+                        <ListSubheader className={classes.subheader}>
                             {i18n.t("mainDrawer.listItems.administration")}
                         </ListSubheader>
-                        <ListItemLink
-                            to="/connections"
+                        <MenuItem 
+                            to="/connections" 
+                            icon={<Sync />} 
                             primary={i18n.t("mainDrawer.listItems.connections")}
-                            icon={
-                                <Badge badgeContent={connectionWarning ? "!" : 0} color="error" overlap="rectangular" >
-                                    <SyncAlt />
-                                </Badge>
-                            }
+                            warning={connectionWarning}
                         />
-                        <ListItemLink
-                            to="/users"
-                            primary={i18n.t("mainDrawer.listItems.users")}
-                            icon={<PeopleAltOutlined />}
+                        <MenuItem 
+                            to="/users" 
+                            icon={<People />} 
+                            primary={i18n.t("mainDrawer.listItems.users")} 
                         />
-                        <ListItemLink
-                            to="/queues"
-                            primary={i18n.t("mainDrawer.listItems.queues")}
-                            icon={<AccountTreeOutlined />}
+                        <MenuItem 
+                            to="/queues" 
+                            icon={<AccountTree />} 
+                            primary={i18n.t("mainDrawer.listItems.queues")} 
                         />
-                        <ListItemLink
-                            to="/Integrations"
-                            primary={i18n.t("mainDrawer.listItems.integrations")}
-                            icon={<DeveloperModeOutlined />}
+                        <MenuItem 
+                            to="/Integrations" 
+                            icon={<DeveloperMode />} 
+                            primary={i18n.t("mainDrawer.listItems.integrations")} 
                         />
-                        <ListItemLink
-                            to="/settings"
-                            primary={i18n.t("mainDrawer.listItems.settings")}
-                            icon={<SettingsOutlined />}
+                        <MenuItem 
+                            to="/settings" 
+                            icon={<Settings />} 
+                            primary={i18n.t("mainDrawer.listItems.settings")} 
                         />
+
                         <Divider className={classes.divider} />
-                        <ListSubheader inset className={classes.sub}>
+                        <ListSubheader className={classes.subheader}>
                             {i18n.t("mainDrawer.listItems.apititle")}
                         </ListSubheader>
-                        <ListItemLink
-                            to="/api"
-                            primary={i18n.t("mainDrawer.listItems.api")}
-                            icon={<Code />}
+                        <MenuItem 
+                            to="/api" 
+                            icon={<Code />} 
+                            primary={i18n.t("mainDrawer.listItems.api")} 
                         />
-                        <ListItemLink
-                            href="https://docs.meuhub.com.br/categoria/wasap/"
-                            primary={i18n.t("mainDrawer.listItems.apidocs")}
-                            icon={<MenuBook />}
+                        <MenuItem 
+                            href="https://docs.meuhub.com.br/categoria/wasap/" 
+                            icon={<MenuBook />} 
+                            primary={i18n.t("mainDrawer.listItems.apidocs")} 
                         />
-                        <ListItemLink
-                            to="/apikey"
-                            primary={i18n.t("mainDrawer.listItems.apikey")}
-                            icon={<VpnKeyRounded />}
+                        <MenuItem 
+                            to="/apikey" 
+                            icon={<VpnKey />} 
+                            primary={i18n.t("mainDrawer.listItems.apikey")} 
                         />
                     </>
                 )}
             />
-        </div>
+        </List>
     );
 };
 
