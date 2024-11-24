@@ -35,11 +35,11 @@ import { Can } from "../components/Can";
 
 const useStyles = makeStyles(theme => ({
     drawer: {
-        width: 280,
+        width: 300,
         flexShrink: 0,
     },
     drawerPaper: {
-        width: 280,
+        width: 300,
         backgroundColor: theme.palette.background.default,
         borderRight: `1px solid ${theme.palette.divider}`,
     },
