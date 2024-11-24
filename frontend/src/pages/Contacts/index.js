@@ -337,7 +337,7 @@ const Contacts = () => {
             <CSVLink
               className={classes.csvbtn}
               separator=";"
-              filename={'pressticket-contacts.csv'}
+              filename={'wasap-contacts.csv'}
               data={
                 contacts.map((contact) => ({
                   name: contact.name,
