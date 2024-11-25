@@ -528,7 +528,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 							{ticket.status === "closed" && (
 								<Tooltip title={i18n.t("ticketsList.items.closed")}>
 									<Chip
-										className={classes.closedBadge} 
+										className={classes.Radiusdot} 
 										badgeContent={"Encerrado"}
 										label={i18n.t("ticketsList.items.closed")}
 										style={{
