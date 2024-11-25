@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
 		position: "relative",
 	},
 	avatarContainer: {
-		position: "relative",
+		position: "absolute",
 	},
 	avatar: {
 		width: "50px",
