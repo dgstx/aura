@@ -116,7 +116,8 @@ const useStyles = makeStyles(theme => ({
 		alignSelf: "center",
 		justifySelf: "flex",
 		marginRight: 32,
-		marginLeft: "15",
+		marginLeft: 15,
+		paddingRight: 10,
 	},
 	contactLastMessage: {
 		paddingRight: 20,
