@@ -450,7 +450,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								<Badge
 									className={classes.closedBadge}
 									badgeContent={"Encerrado"}
-									style={{ backgroundColor: "#ff5e43" }}
+									color="primary"
 								/>
 							)}
 							{ticket.contact.telegramId && (
