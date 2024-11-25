@@ -118,9 +118,8 @@ const useStyles = makeStyles(theme => ({
 	closedBadge: {
 		alignSelf: "center",
 		justifySelf: "flex",
-		marginRight: 32,
-		marginLeft: 15,
-		paddingRight: 10,
+		transform: scale(1) translate(20%, -50%),
+		marginRight: 10
 	},
 	contactLastMessage: {
 		paddingRight: 20,
