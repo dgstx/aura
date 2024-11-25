@@ -485,6 +485,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								component="span"
 								variant="body2"
 								color="textPrimary"
+								className={classes.contactName} // Adicione esta linha
 							>
 								{ticket.contact.name}
 							</Typography>
