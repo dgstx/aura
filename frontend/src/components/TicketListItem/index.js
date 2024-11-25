@@ -52,6 +52,7 @@ import { AuthContext } from "../../context/Auth/AuthContext";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n";
+import { objectOf } from "prop-types";
 
 
 const useStyles = makeStyles(theme => ({
@@ -111,6 +112,7 @@ const useStyles = makeStyles(theme => ({
 	contactNameWrapper: {
 		display: "flex",
 		justifyContent: "space-between",
+		fontWeight: "bold"
 	},
 	lastMessageTime: {
 		justifySelf: "flex-end",
@@ -119,8 +121,8 @@ const useStyles = makeStyles(theme => ({
 		alignSelf: "center",
 		justifySelf: "flex",
 		transform: "scale(1) translate(20%, -50%)",
-		marginRight: 10,
 		backgroundColor: '#ff5e43',
+		marginRight: 28, // Mantém a margem para o próximo elemento
 	},
 	contactLastMessage: {
 		paddingRight: 20,
@@ -448,7 +450,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								<Badge
 									className={classes.closedBadge}
 									badgeContent={"Encerrado"}
-									color="primary"
+									style={{ backgroundColor: "#ff5e43" }}
 								/>
 							)}
 							{ticket.contact.telegramId && (
@@ -475,7 +477,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 							)}
 							{ticket.contact.number && (
 								<Tooltip title="WhatsApp" arrow placement="right" >
-									<WhatsApp fontSize="small" style={{ color: "#075e54", marginLeft: '28px' }} className={classes.contactIcon} />
+									<WhatsApp fontSize="small" style={{ color: "#075e54" }} className={classes.contactIcon} />
 								</Tooltip>
 
 							)}
