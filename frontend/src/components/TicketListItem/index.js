@@ -533,15 +533,14 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 										label={i18n.t("ticketsList.items.closed")}
 										style={{
 											backgroundColor: "#ff5e43",
-											alignSelf: "center",
-											justifySelf: "flex",
-											transform: "scale(1) translate(100%, -50%)",
-											marginRight: 36, // Mantém a margem para o próximo elemento
+											fontSize: "0.8em",
+											fontWeight: "bold",
+											height: 16,
+											padding: "5px 0px",
 											borderRadius: "3px",
 											color: "white",
-											padding: "2px 6px",
-											fontSize: "0.8em",
-											fontWeight: "bold"
+											marginRight: "5px",
+											marginBottom: "3px",
 										}}
 
 									/>
