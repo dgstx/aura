@@ -451,13 +451,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 									</Typography>
 								)}
 							</div>
-							{ticket.status === "closed" && (
-								<Badge
-									className={classes.closedBadge}
-									badgeContent={"Encerrado"}
-									color="primary"
-								/>
-							)}
+
 							{ticket.contact.telegramId && (
 								<Tooltip title="Telegram" arrow placement="right" >
 									<Telegram fontSize="small" style={{ color: "#85b2ff" }} className={classes.contactIcon} />
@@ -530,6 +524,30 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 							</Typography>
 
 							<br></br>
+
+							{ticket.status === "closed" && (
+								<Tooltip title={i18n.t("ticketsList.items.closed")}>
+									<Chip
+										className={classes.closedBadge} 
+										badgeContent={"Encerrado"}
+										label={i18n.t("ticketsList.items.closed")}
+										style={{
+											backgroundColor: "#ff5e43",
+											alignSelf: "center",
+											justifySelf: "flex",
+											transform: "scale(1) translate(100%, -50%)",
+											marginRight: 36, // Mantém a margem para o próximo elemento
+											borderRadius: "3px",
+											color: "white",
+											padding: "2px 6px",
+											fontSize: "0.8em",
+											fontWeight: "bold"
+										}}
+
+									/>
+								</Tooltip>
+							)}
+
 							{ticket.whatsappId && (
 								<Tooltip title={i18n.t("ticketsList.items.connection")}>
 									<Chip
@@ -550,6 +568,8 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 									/>
 								</Tooltip>
 							)}
+
+							
 
 							{uName && (
 								<Tooltip title={i18n.t("ticketsList.items.user")}>
