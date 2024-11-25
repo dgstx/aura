@@ -592,7 +592,17 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 												<span style={{ marginRight: 8 }}>Setor:</span>
 												<Chip
 													label={ticket.queue.name}
-													style={{ backgroundColor: ticket.queue.color || "#7C7C7C", color: "#fff", marginRight: 8 }}
+													style={{ backgroundColor: ticket.queue.color || "#7C7C7C",
+															 color: "#fff",
+															 fontSize: "0.8em",
+															 fontWeight: "bold",
+															 height: 16,
+															 padding: "5px 0px",
+															 position: "inherit",
+															 borderRadius: "3px",
+															 marginRight: 8,
+
+															}}
 												/>
 											</>
 										)}
