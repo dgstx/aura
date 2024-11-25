@@ -112,7 +112,6 @@ const useStyles = makeStyles(theme => ({
 	contactNameWrapper: {
 		display: "flex",
 		justifyContent: "space-between",
-		fontWeight: "bold"
 	},
 	lastMessageTime: {
 		justifySelf: "flex-end",
@@ -195,6 +194,7 @@ const useStyles = makeStyles(theme => ({
 	contactName: {
 		display: 'flex',
 		alignItems: 'center',
+		fontWeight: "bold"
 	},
 }));
 
