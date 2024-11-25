@@ -474,7 +474,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 							)}
 							{ticket.contact.number && (
 								<Tooltip title="WhatsApp" arrow placement="right" >
-									<WhatsApp fontSize="small" style={{ color: "#075e54" }} className={classes.contactIcon} />
+									<WhatsApp fontSize="small" style={{ color: "#075e54", marginLeft: '28px' }} className={classes.contactIcon} />
 								</Tooltip>
 
 							)}
