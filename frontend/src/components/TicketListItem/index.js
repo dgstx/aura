@@ -114,9 +114,9 @@ const useStyles = makeStyles(theme => ({
 	},
 	closedBadge: {
 		alignSelf: "center",
-		justifySelf: "flex-end",
+		justifySelf: "flex",
 		marginRight: 32,
-		marginLeft: "auto",
+		marginLeft: "15",
 	},
 	contactLastMessage: {
 		paddingRight: 20,
@@ -470,7 +470,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								</Tooltip>
 							)}
 							{ticket.contact.number && (
-								<Tooltip title="wwebjs" arrow placement="right" >
+								<Tooltip title="WhatsApp" arrow placement="right" >
 									<WhatsApp fontSize="small" style={{ color: "#075e54" }} className={classes.contactIcon} />
 								</Tooltip>
 
