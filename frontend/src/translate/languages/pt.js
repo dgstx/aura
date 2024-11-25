@@ -400,7 +400,8 @@ const messages = {
           connection: "Conexão",
           user: "Atendente",
           queue: "Setor",
-          tags: "Tags"
+          tags: "Tags",
+          closed: "Encerrado"
         },
         buttons: {
           accept: "Responder",
@@ -717,6 +718,7 @@ const messages = {
           cancel: "Cancelar",
         },
       },
+      Tikets
       messageOptionsMenu: {
         edit: "Editar",
         history: "Histórico",
