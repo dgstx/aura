@@ -120,6 +120,7 @@ const useStyles = makeStyles(theme => ({
 		justifySelf: "flex",
 		transform: "scale(1) translate(20%, -50%)",
 		marginRight: 10,
+		backgroundColor: '#ff5e43',
 	},
 	contactLastMessage: {
 		paddingRight: 20,
