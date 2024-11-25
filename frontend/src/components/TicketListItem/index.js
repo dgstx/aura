@@ -443,7 +443,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 							{ticket.status === "closed" && (
 								<Badge
 									className={classes.closedBadge}
-									badgeContent={"Encerrado"}
+									badgeContent={"closed"}
 									color="primary"
 								/>
 							)}
