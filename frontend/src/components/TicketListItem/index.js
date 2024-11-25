@@ -585,13 +585,30 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 							<br></br>
 							<Tooltip title={i18n.t("ticketsList.items.tags")}>
 								<span className={classes.secondaryContentSecond}>
-									{
-										tag?.map((tag) => {
-											return (
-												<ContactTag tag={tag} key={`ticket-contact-tag-${ticket.id}-${tag.id}`} />
-											);
-										})
-									}
+									<div style={{ display: 'flex', alignItems: 'center' }}>
+										{/* Exibir "Setor:" e a fila */}
+										{ticket.queue && (
+											<>
+												<span style={{ marginRight: 8 }}>Setor:</span>
+												<Chip
+													label={ticket.queue.name}
+													style={{ backgroundColor: ticket.queue.color || "#7C7C7C", color: "#fff", marginRight: 8 }}
+												/>
+											</>
+										)}
+
+										{/* Exibir "Tags:" e as tags */}
+										{tag?.length > 0 && (
+											<>
+												<span style={{ marginRight: 8 }}>Tags:</span>
+												{
+													tag.map((tag) => (
+														<ContactTag tag={tag} key={`ticket-contact-tag-${ticket.id}-${tag.id}`} />
+													))
+												}
+											</>
+										)}
+									</div>
 								</span>
 							</Tooltip>
 						</div>
@@ -602,7 +619,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 						<Tooltip title={i18n.t("ticketsList.items.accept")}>
 							<IconButton
 								className={classes.bottomButton}
-								color="green"
+								color="primary"
 								onClick={e => handleOpenAcceptTicketWithouSelectQueue()}
 								loading={loading ? "true" : undefined}
 							>
@@ -615,7 +632,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 						<Tooltip title={i18n.t("ticketsList.items.accept")}>
 							<IconButton
 								className={classes.bottomButton}
-								color="green"
+								color="primary"
 								onClick={e => handleAcepptTicket(ticket.id)} >
 								<Done />
 							</IconButton>
@@ -637,7 +654,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 						<Tooltip title={i18n.t("ticketsList.items.close")}>
 							<IconButton
 								className={classes.bottomButton}
-								color="red"
+								color="primary"
 								onClick={e => handleClosedTicket(ticket.id)} >
 								<ClearOutlined />
 							</IconButton>
