@@ -62,7 +62,7 @@ const useStyles = makeStyles(theme => ({
 		position: "relative",
 		display: "flex", // Garante o layout flexível
 		alignItems: "flex-start", // Alinha ao topo
-		padding: "10px", // Espaçamento interno de 10px
+		padding: "7px", // Espaçamento interno de 10px
 	},
 	avatar: {
 		width: "50px",
