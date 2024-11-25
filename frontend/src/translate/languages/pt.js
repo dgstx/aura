@@ -401,7 +401,6 @@ const messages = {
           user: "Atendente",
           queue: "Setor",
           tags: "Tags",
-          closed: "Encerrado"
         },
         buttons: {
           accept: "Responder",
