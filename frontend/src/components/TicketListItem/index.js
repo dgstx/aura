@@ -121,8 +121,7 @@ const useStyles = makeStyles(theme => ({
 		alignSelf: "center",
 		justifySelf: "flex",
 		transform: "scale(1) translate(20%, -50%)",
-		backgroundColor: '#ff5e43',
-		marginRight: 28, // Mantém a margem para o próximo elemento
+		marginRight: 36, // Mantém a margem para o próximo elemento
 	},
 	contactLastMessage: {
 		paddingRight: 20,
