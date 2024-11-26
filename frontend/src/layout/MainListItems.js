@@ -208,7 +208,9 @@ const MainListItems = ({ drawerClose }) => {
                         <MenuItem 
                             href="https://docs.meuhub.com.br/categoria/wasap/" 
                             icon={<MenuBook />} 
-                            primary={i18n.t("mainDrawer.listItems.apidocs")} 
+                            primary={i18n.t("mainDrawer.listItems.apidocs")}
+                            target="_blank"
+                            rel="noopener noreferrer"
                         />
                         <MenuItem 
                             to="/apikey" 
