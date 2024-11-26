@@ -81,6 +81,7 @@ const useStyles = makeStyles(theme => ({
     },
     divider: {
         margin: theme.spacing(1, 0),
+        width: '80%'
     },
 }));
 
