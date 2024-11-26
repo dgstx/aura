@@ -567,7 +567,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 										badgeContent={"AGUARDANDO"}
 										label={i18n.t("ticketsList.items.pending")}
 										style={{
-											backgroundColor: "#7bc242",
+											backgroundColor: "#c29942",
 											fontSize: "0.8em",
 											fontWeight: "bold",
 											height: 16,
@@ -603,12 +603,8 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								</Tooltip>
 							)}
 
-							
-
 							{uName && (
 								<Tooltip title={i18n.t("ticketsList.items.user")}>
-									<div>
-										<span style={{ marginRight: 8 }}>Setor:</span>
 									<Chip
 										className={classes.Radiusdot}
 										style={{
@@ -625,7 +621,6 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 										}}
 										label={uName.toUpperCase()}
 									/>
-									</div>	
 								</Tooltip>
 							)} 	
 
