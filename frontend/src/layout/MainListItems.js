@@ -25,7 +25,8 @@ import {
     Settings,
     Code,
     MenuBook,
-    VpnKey
+    VpnKey,
+    SettingsEthernet
 } from "@material-ui/icons";
 
 import { i18n } from "../translate/i18n";
@@ -170,7 +171,7 @@ const MainListItems = ({ drawerClose }) => {
                         </ListSubheader>
                         <MenuItem 
                             to="/connections" 
-                            icon={<Sync />} 
+                            icon={<SettingsEthernet />} 
                             primary={i18n.t("mainDrawer.listItems.connections")}
                             warning={connectionWarning}
                         />
