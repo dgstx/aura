@@ -43,6 +43,7 @@ const useStyles = makeStyles(theme => ({
         width: 300,
         backgroundColor: theme.palette.background.default,
         borderRight: `1px solid ${theme.palette.divider}`,
+        overflowX: 'hidden',
     },
     toolbar: {
         ...theme.mixins.toolbar,
