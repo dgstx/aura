@@ -538,10 +538,9 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 								</Tooltip>
 							)}
 
-							<br></br>
-
 							{ticket.whatsappId && (
 								<Tooltip title={i18n.t("ticketsList.items.connection")}>
+									<span style={{ marginRight: 8 }}>Conexão:</span>
 									<Chip
 										className={classes.Radiusdot}
 										style={{
@@ -565,6 +564,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 
 							{uName && (
 								<Tooltip title={i18n.t("ticketsList.items.user")}>
+									<span style={{ marginRight: 8 }}>Atendente:</span>
 									<Chip
 										className={classes.Radiusdot}
 										style={{
