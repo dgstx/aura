@@ -536,6 +536,48 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 
 									/>
 								</Tooltip>
+								
+								{ticket.status === "open" && (
+								<Tooltip title={i18n.t("ticketsList.items.open")}>
+									<Chip
+										className={classes.Radiusdot} 
+										badgeContent={"EM ATENDIMENTO"}
+										label={i18n.t("ticketsList.items.open")}
+										style={{
+											backgroundColor: "#7bc242",
+											fontSize: "0.8em",
+											fontWeight: "bold",
+											height: 16,
+											padding: "5px 0px",
+											borderRadius: "3px",
+											color: "white",
+											marginRight: "5px",
+											marginBottom: "3px",
+										}}
+
+									/>
+								</Tooltip>
+
+								{ticket.status === "pending" && (
+									<Tooltip title={i18n.t("ticketsList.items.pending")}>
+										<Chip
+											className={classes.Radiusdot} 
+											badgeContent={"AGUARDANDO"}
+											label={i18n.t("ticketsList.items.pending")}
+											style={{
+												backgroundColor: "#7bc242",
+												fontSize: "0.8em",
+												fontWeight: "bold",
+												height: 16,
+												padding: "5px 0px",
+												borderRadius: "3px",
+												color: "white",
+												marginRight: "5px",
+												marginBottom: "3px",
+											}}
+
+										/>
+									</Tooltip>
 							)}
 
 							{ticket.whatsappId && (
