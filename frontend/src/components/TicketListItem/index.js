@@ -607,7 +607,6 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 
 							{uName && (
 								<Tooltip title={i18n.t("ticketsList.items.user")}>
-									<div style={{ display: 'flex', alignItems: 'center' }}>
 										<span style={{ marginRight: 8 }}>Setor:</span>
 									<Chip
 										className={classes.Radiusdot}
@@ -625,9 +624,8 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 										}}
 										label={uName.toUpperCase()}
 									/>
-									</div>	
 								</Tooltip>
-							)}
+							)} 	
 
 							<br></br>
 							<Tooltip title={i18n.t("ticketsList.items.tags")}>
