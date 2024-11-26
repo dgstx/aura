@@ -444,7 +444,7 @@ const messages = {
           quickAnswers: "Respostas Rápidas",
           tags: "Tags",
           queues: "Setores",
-          administration: "Administração",
+          administration: "Gestão",
           users: "Atendentes",
           company: "Empresa",
           integrations: "Integrações",
