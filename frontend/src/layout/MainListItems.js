@@ -50,7 +50,7 @@ const useStyles = makeStyles(theme => ({
         ...theme.mixins.toolbar,
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-left',
         backgroundColor: theme.palette.primary.main,
         color: theme.palette.primary.contrastText,
     },
@@ -75,7 +75,7 @@ const useStyles = makeStyles(theme => ({
     },
     subheader: {
         color: theme.palette.text.secondary,
-        fontWeight: 600,
+        fontWeight: 400,
         textTransform: 'uppercase',
         letterSpacing: '1px',
     },
