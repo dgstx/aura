@@ -213,6 +213,8 @@ const useStyles = makeStyles((theme) => ({
         padding: "8px",
         textOverflow: "ellipsis",
         overflowY: "hidden",
+        padding: 10,
+        borderRadius: 13,
         maxHeight: "30px",
         "&:hover": {
           background: theme.palette.background.paper,
