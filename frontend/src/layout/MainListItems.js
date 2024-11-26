@@ -55,14 +55,16 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.primary.contrastText,
     },
     listItem: {
+        width: 'calc(100% - 16px)', // Evita ultrapassar a largura do menu
+        margin: theme.spacing(0.5, 'auto'), // Ajusta margens
         borderRadius: 8,
-        margin: theme.spacing(0.5, 1),
         transition: 'all 0.3s ease',
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
             transform: 'translateX(8px)',
         },
     },
+    
     listItemActive: {
         backgroundColor: theme.palette.action.selected,
         '&:hover': {
@@ -80,9 +82,9 @@ const useStyles = makeStyles(theme => ({
         letterSpacing: '1px',
     },
     divider: {
-        margin: theme.spacing(1, 0),
-        width: '80%'
-    },
+        margin: theme.spacing(1, 'auto'), // Centraliza e remove margem lateral adicional
+        width: 'calc(100% - 32px)', // 100% menos padding ou margem lateral
+    },    
 }));
 
 const MainListItems = ({ drawerClose }) => {
