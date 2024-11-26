@@ -403,7 +403,7 @@ const messages = {
           tags: "Tags",
           closed: "Encerrado",
           open: "Em Atendimento",
-          pedding: "Aguardando",
+          pending: "Aguardando",
         },
         buttons: {
           accept: "Responder",
