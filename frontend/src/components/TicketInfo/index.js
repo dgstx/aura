@@ -20,7 +20,7 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 			style={{ cursor: "pointer" }}
 			titleTypographyProps={{
 				noWrap: true,
-				style: { fontWeight: "bold", color: "#000" } // Negrito e cor preta
+				style: { fontWeight: "bold", color: "#000", fontSize: "1.2rem" } // Negrito e cor preta
 			}}
 			subheaderTypographyProps={{ noWrap: true }}
 			avatar={<Avatar src={contact.profilePicUrl} className={classes.avatar} alt="contact_image" />}
