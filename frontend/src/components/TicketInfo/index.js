@@ -20,13 +20,13 @@ const TicketInfo = ({ contact, ticket, onClick }) => {
 			style={{ cursor: "pointer" }}
 			titleTypographyProps={{
 				noWrap: true,
-				style: { fontWeight: "bold", color: "#000", fontSize: "1.2rem" } // Negrito e cor preta
+				style: { fontWeight: "bold", fontSize: "1.2rem" } // Negrito e cor preta
 			}}
 			subheaderTypographyProps={{ noWrap: true }}
 			avatar={<Avatar src={contact.profilePicUrl} className={classes.avatar} alt="contact_image" />}
 			title={contact.name}
 			subheader={
-				`#${ticket.id} - ` + // Número do ticket como primeiro item
+				`Ticket: #${ticket.id} | ` + // Número do ticket como primeiro item
 				(ticket.user &&
 					`${i18n.t("messagesList.header.assignedTo")} ${ticket.user.name} 
 					${ticket.queue ? ' | Setor: ' + ticket.queue.name : ' | Setor: Nenhum'}`)
