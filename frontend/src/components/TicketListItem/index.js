@@ -752,7 +752,7 @@ const TicketListItem = ({ ticket, userId, filteredTags }) => {
 					)}
 				</div>
 			</ListItem>
-			<Divider variant="inset" component="li" />
+			<Divider component="li" />
 		</React.Fragment>
 	);
 };
