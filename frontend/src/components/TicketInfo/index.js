@@ -8,7 +8,7 @@ const useStyles = makeStyles(() => ({
 	avatar: {
 		width: "55px",
 		height: "55px",
-		borderRadius: "13px"
+		borderRadius: "25%"
 	}
 }));
 
