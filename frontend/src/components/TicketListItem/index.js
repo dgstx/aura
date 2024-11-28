@@ -66,8 +66,8 @@ const useStyles = makeStyles(theme => ({
 		padding: "7px", // Espaçamento interno de 10px
 	},
 	avatar: {
-		width: "50px",
-		height: "50px",
+		width: "55px",
+		height: "55px",
 		borderRadius: "25%"
 	},
 	badgeStyle: {
