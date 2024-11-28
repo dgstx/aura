@@ -67,8 +67,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   avatar: {
-    width: "50px",
-    height: "50px",
+    width: "55px",
+    height: "55x",
     borderRadius: "25%"
   },
   dropInfo: {
