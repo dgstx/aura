@@ -613,7 +613,7 @@ const MessagesList = ({ ticketId, isGroup }) => {
       if (messageTicket !== previousMessageTicket) {
         return (
           <div key={`ticket-${message.id}`} className={classes.ticketNumber}>
-            #ticket: {messageTicket}
+            Ticket: {messageTicket}
             <hr />
           </div>
         );
