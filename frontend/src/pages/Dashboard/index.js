@@ -187,7 +187,7 @@ const Dashboard = () => {
 				</Grid>
 			</Grid>
 
-			<Grid container spacing={2}>
+			<Grid container spacing={3}>
 				<Grid item xs={12}>
 					<Paper className={classes.fixedHeightPaper} style={{ height: 300 }}>
 						<Chart tickets={ticketsInAttendance.tickets} />
@@ -195,7 +195,7 @@ const Dashboard = () => {
 				</Grid>
 			</Grid>
 
-			<Grid container spacing={2}>
+			<Grid container spacing={3}>
 				<Grid item xs={6}>
 					<Paper className={classes.largeHeightPaper}>
 						<ChartPerConnection ticketsByConnection={ticketsInAttendance.tickets} />
