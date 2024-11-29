@@ -92,7 +92,7 @@ const Chat = () => {
             ) : (
               <Hidden only={["sm", "xs"]}>
                 <Paper className={classes.welcomeMsg}>
-                  {/* <Paper square variant="outlined" className={classes.welcomeMsg}> */}
+                  { <Paper square variant="outlined" className={classes.welcomeMsg}> }
                   <span>
                     <center>
                       <img src={logo} width="75%" alt=""/>

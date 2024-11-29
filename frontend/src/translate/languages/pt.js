@@ -337,7 +337,7 @@ const messages = {
         success: "Atendente salvo com sucesso.",
       },
       chat: {
-        noTicketMessage: "Selecione um ticket para começar a conversar.",
+        noTicketMessage: "Escolha um ticket para iniciar a conversa.",
       },
       uploads: {
         titles: {
