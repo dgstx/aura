@@ -24,7 +24,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    alignItems: "center",
     padding: theme.spacing(4),
   },
   container: {
@@ -36,6 +35,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(3),
     marginBottom: theme.spacing(2),
     display: "flex",
+    alignItems: "center",
     justifyContent: "space-between",
     borderRadius: 13, // Borda arredondada conforme solicitado
     boxShadow: theme.shadows[3], // Sombra mais forte para modernizar
