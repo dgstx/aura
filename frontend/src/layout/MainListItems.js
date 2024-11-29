@@ -33,6 +33,7 @@ import { i18n } from "../translate/i18n";
 import { WhatsAppsContext } from "../context/WhatsApp/WhatsAppsContext";
 import { AuthContext } from "../context/Auth/AuthContext";
 import { Can } from "../components/Can";
+import { useLocation } from "react-router-dom"; // Adicione esta importação
 
 const useStyles = makeStyles(theme => ({
     drawer: {
@@ -55,18 +56,22 @@ const useStyles = makeStyles(theme => ({
         color: theme.palette.primary.contrastText,
     },
     listItem: {
-        width: 'calc(100% - 16px)', // Evita ultrapassar a largura do menu
-        margin: theme.spacing(0.5, 'auto'), // Ajusta margens
+        width: 'calc(100% - 16px)',
+        margin: theme.spacing(0.5, 'auto'),
         borderRadius: 8,
         transition: 'all 0.3s ease',
         '&:hover': {
             backgroundColor: theme.palette.action.hover,
-            transform: 'translateX(8px)',
+            transform: 'scale(1.02)', // Animação centralizada
         },
     },
     
     listItemActive: {
         backgroundColor: theme.palette.action.selected,
+        color: '#8c52ff', // Cor do texto quando ativo
+        '& .MuiListItemIcon-root': {
+            color: '#8c52ff', // Cor do ícone quando ativo
+        },
         '&:hover': {
             backgroundColor: theme.palette.action.selected,
         },
@@ -80,10 +85,13 @@ const useStyles = makeStyles(theme => ({
         fontWeight: 400,
         textTransform: 'uppercase',
         letterSpacing: '1px',
+        whiteSpace: 'nowrap',  // Impede a quebra de linha
+        overflow: 'hidden',    // Esconde o conteúdo que excede
+        textOverflow: 'ellipsis', // Adiciona reticências se o texto for muito longo
     },
     divider: {
-        margin: theme.spacing(1, 'auto'), // Centraliza e remove margem lateral adicional
-        width: 'calc(100% - 32px)', // 100% menos padding ou margem lateral
+        margin: theme.spacing(1, 'auto'),
+        width: 'calc(100% - 32px)',
     },    
 }));
 
@@ -91,6 +99,7 @@ const MainListItems = ({ drawerClose }) => {
     const classes = useStyles();
     const { whatsApps } = useContext(WhatsAppsContext);
     const { user } = useContext(AuthContext);
+    const location = useLocation(); // Hook para pegar a localização atual
     const [connectionWarning, setConnectionWarning] = useState(false);
 
     useEffect(() => {
@@ -104,6 +113,9 @@ const MainListItems = ({ drawerClose }) => {
     }, [whatsApps]);
 
     const MenuItem = ({ to, icon, primary, href, warning }) => {
+        // Verifica se o item atual está ativo comparando o caminho
+        const isActive = location.pathname === to;
+
         const Icon = () => (
             warning ? (
                 <Badge badgeContent="!" color="error" overlap="rectangular">
@@ -120,15 +132,18 @@ const MainListItems = ({ drawerClose }) => {
             <ListItem 
                 button 
                 {...props}
-                className={classes.listItem}
-                classes={{ selected: classes.listItemActive }}
+                className={`${classes.listItem} ${isActive ? classes.listItemActive : ''}`}
             >
                 <ListItemIcon className={classes.icon}>
                     <Icon />
                 </ListItemIcon>
                 <ListItemText 
                     primary={
-                        <Typography variant="body2" color="textPrimary">
+                        <Typography 
+                            variant="body2" 
+                            color={isActive ? "textPrimary" : "inherit"}
+                            style={{ color: isActive ? '#8c52ff' : 'inherit' }}
+                        >
                             {primary}
                         </Typography>
                     } 
