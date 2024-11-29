@@ -20,7 +20,6 @@ import { i18n } from "../../translate/i18n.js";
 const useStyles = makeStyles((theme) => ({
   root: {
     backgroundColor: theme.palette.background.default,
-    minHeight: "100vh",
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
