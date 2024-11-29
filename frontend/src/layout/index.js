@@ -18,6 +18,7 @@ import {
 import MenuIcon from "@material-ui/icons/Menu";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import AccountCircle from "@material-ui/icons/AccountCircle";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 
 import MainListItems from "./MainListItems";
 import NotificationsPopOver from "../components/NotificationsPopOver";
@@ -277,17 +278,25 @@ const LoggedInLayout = ({ children }) => {
                             onClose={handleCloseMenu}
                         >
                             <MenuItem onClick={handleOpenUserModal}>
+                                <AccountCircle style={{ marginRight: 8 }} />
                                 {i18n.t("mainDrawer.appBar.user.profile")}
                             </MenuItem>
                             <MenuItem onClick={handleClickLogout}>
+                                <ExitToAppIcon style={{ marginRight: 8 }} />
                                 {i18n.t("mainDrawer.appBar.user.logout")}
                             </MenuItem>
-                            <Divider />
-                            <span className={classes.systemCss}>
-                                <Link color="inherit" href={system.url || "https://wasap.com.br"}>
-                                    Versão 2.1.0
+                            <Divider style={{ margin: "8px 0" }} />
+                            <MenuItem disabled style={{ justifyContent: "center", opacity: 0.6 }}>
+                                <Link 
+                                    color="inherit" 
+                                    href={system.url || "https://wasap.com.br"}
+                                    style={{ textDecoration: "none" }}
+                                >
+                                    <Typography variant="caption">
+                                        Versão {"2.1.0"}
+                                    </Typography>
                                 </Link>
-                            </span>
+                            </MenuItem>
                         </Menu>
                     </div>
                 </Toolbar>
