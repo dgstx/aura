@@ -106,7 +106,7 @@ const Integrations = () => {
     <div className={classes.root}>
       <Container maxWidth="md">
         <Typography 
-          variant="h4" 
+          variant="h5" 
           className={classes.pageTitle}
         >
           {i18n.t("integrations.title")}
