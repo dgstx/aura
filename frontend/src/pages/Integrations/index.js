@@ -19,8 +19,7 @@ import toastError from "../../errors/toastError";
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
-    padding: theme.spacing(4),
-    backgroundColor: '#f5f5f5'
+    padding: theme.spacing(4)
   },
   pageTitle: {
     marginBottom: theme.spacing(4),
