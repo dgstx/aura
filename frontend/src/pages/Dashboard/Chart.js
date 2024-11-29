@@ -83,6 +83,7 @@ const Chart = () => {
 						stroke={theme.palette.text.secondary}
 						tickLine={false}
 						axisLine={false}
+						style={{ textAlign: "center" }}
 					/>
 					<CartesianGrid vertical={false} strokeDasharray="4" opacity={0.3} />
 					<Tooltip content={<CustomTooltip />} cursor={true} />
