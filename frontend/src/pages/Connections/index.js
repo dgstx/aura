@@ -390,10 +390,10 @@ const Connections = () => {
 					<TableHead>
 						<TableRow>
 							<TableCell align="center">
-								{i18n.t("connections.table.id")}
+								{i18n.t("connections.table.channel")}
 							</TableCell>
 							<TableCell align="center">
-								{i18n.t("connections.table.channel")}
+								{i18n.t("connections.table.id")}
 							</TableCell>
 							<TableCell align="center">
 								{i18n.t("connections.table.name")}
@@ -430,10 +430,10 @@ const Connections = () => {
 									whatsApps.map(whatsApp => (
 										<TableRow key={whatsApp.id}>
 											<TableCell align="center">
-												{whatsApp.id}
+												{getChannelIcon(whatsApp.type)}
 											</TableCell>
 											<TableCell align="center">
-												{getChannelIcon(whatsApp.type)}
+												{whatsApp.id}
 											</TableCell>
 											<TableCell align="center">
 												{whatsApp.name}
