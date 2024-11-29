@@ -34,6 +34,7 @@ const useStyles = makeStyles(theme => ({
 		height: 120,
 		alignItems: "center",
 		justifyContent: "center",
+		borderRadius: "13px",
 	},
 	fixedHeightPaper: {
 		padding: theme.spacing(2),
@@ -42,6 +43,7 @@ const useStyles = makeStyles(theme => ({
 		overflow: "auto",
 		flexDirection: "column",
 		height: 240,
+		borderRadius: "13px",
 	},
 	customFixedHeightPaper: {
 		padding: theme.spacing(2),
@@ -49,6 +51,7 @@ const useStyles = makeStyles(theme => ({
 		overflow: "none",
 		flexDirection: "column",
 		height: 120,
+		borderRadius: "13px",
 	},
 	largeHeightPaper: {
 		padding: theme.spacing(2),
@@ -56,6 +59,7 @@ const useStyles = makeStyles(theme => ({
 		overflow: "auto",
 		flexDirection: "column",
 		height: 400,
+		borderRadius: "13px",
 	},
 	icon: {
 		fontSize: 32,
