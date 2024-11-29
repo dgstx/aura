@@ -56,7 +56,7 @@ const messages = {
             title: "Aguardando"
           },
           closed: {
-            title: "Resolvido"
+            title: "Encerrados"
           }
         },
         charts: {
@@ -361,8 +361,8 @@ const messages = {
           message: "Mensagem de",
         },
         tabs: {
-          open: { title: "Inbox" },
-          closed: { title: "Resolvidos" },
+          open: { title: "Em Atendimento" },
+          closed: { title: "Encerrados" },
           search: { title: "Busca" },
         },
         search: {
