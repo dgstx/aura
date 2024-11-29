@@ -95,7 +95,7 @@ const Chat = () => {
                   {/* <Paper square variant="outlined" className={classes.welcomeMsg}> */}
                   <span>
                     <center>
-                      <img src={logo} width="50%" alt=""/>
+                      <img src={logo} width="75%" alt=""/>
                     </center>
                     {i18n.t("chat.noTicketMessage")}
                     </span>
