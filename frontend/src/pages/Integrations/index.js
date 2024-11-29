@@ -1,150 +1,173 @@
 import React, { useState, useEffect } from "react";
 import openSocket from "socket.io-client";
-
-import {
-	Container,
-	makeStyles,
-	Paper,
-	TextField,
-	Typography
+import { 
+  Container, 
+  makeStyles, 
+  Paper, 
+  TextField, 
+  Typography, 
+  Grid,
+  Card,
+  CardContent,
+  CardHeader
 } from "@material-ui/core";
-
 import { toast } from "react-toastify";
-import Title from "../../components/Title";
 import api from "../../services/api";
 import { i18n } from "../../translate/i18n.js";
 import toastError from "../../errors/toastError";
 
 const useStyles = makeStyles(theme => ({
-	root: {
-		display: "flex",
-		alignItems: "center",
-		padding: theme.spacing(8, 8, 3),
-	},
-	paper: {
-		padding: theme.spacing(2),
-		display: "flex",
-		alignItems: "center",
-		marginBottom: 12,
-
-	}
+  root: {
+    flexGrow: 1,
+    padding: theme.spacing(4),
+    backgroundColor: '#f5f5f5'
+  },
+  pageTitle: {
+    marginBottom: theme.spacing(4),
+    color: theme.palette.text.primary,
+    fontWeight: 600
+  },
+  card: {
+    borderRadius: 13,
+    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+    marginBottom: theme.spacing(3)
+  },
+  cardHeader: {
+    backgroundColor: '#f0f0f0',
+    padding: theme.spacing(2),
+    borderBottom: '1px solid #e0e0e0'
+  },
+  cardContent: {
+    padding: theme.spacing(3)
+  },
+  textField: {
+    borderRadius: 13,
+    '& .MuiOutlinedInput-root': {
+      borderRadius: 13
+    }
+  }
 }));
 
 const Integrations = () => {
-	const classes = useStyles();
+  const classes = useStyles();
+  const [integrations, setIntegrations] = useState([]);
 
-	const [integrations, setIntegrations] = useState([]);
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const { data } = await api.get("/integrations");
+        setIntegrations(data);
+      } catch (err) {
+        toastError(err);
+      }
+    };
+    fetchSession();
+  }, []);
 
-	useEffect(() => {
-		const fetchSession = async () => {
-			try {
-				const { data } = await api.get("/integrations");
-				setIntegrations(data);
-			} catch (err) {
-				toastError(err);
-			}
-		};
-		fetchSession();
-	}, []);
+  useEffect(() => {
+    const socket = openSocket(process.env.REACT_APP_BACKEND_URL);
 
-	useEffect(() => {
-		const socket = openSocket(process.env.REACT_APP_BACKEND_URL);
+    socket.on("integrations", data => {
+      if (data.action === "update") {
+        setIntegrations(prevState => {
+          const aux = [...prevState];
+          const integrationIndex = aux.findIndex(s => s.key === data.integration.key);
+          aux[integrationIndex].value = data.integration.value;
+          return aux;
+        });
+      }
+    });
 
-		socket.on("integrations", data => {
-			if (data.action === "update") {
-				setIntegrations(prevState => {
-					const aux = [...prevState];
-					const integrationIndex = aux.findIndex(s => s.key === data.integration.key);
-					aux[integrationIndex].value = data.integration.value;
-					return aux;
-				});
-			}
-		});
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
 
-		return () => {
-			socket.disconnect();
-		};
-	}, []);
+  const handleChangeIntegration = async e => {
+    const selectedValue = e.target.value;
+    const integrationKey = e.target.name;
 
-	const handleChangeIntegration = async e => {
-		const selectedValue = e.target.value;
-		const integrationKey = e.target.name;
+    try {
+      await api.put(`/integrations/${integrationKey}`, {
+        value: selectedValue,
+      });
+      toast.success(i18n.t("integrations.success"));
+    } catch (err) {
+      toastError(err);
+    }
+  };
 
-		try {
-			await api.put(`/integrations/${integrationKey}`, {
-				value: selectedValue,
-			});
-			toast.success(i18n.t("integrations.success"));
-		} catch (err) {
-			toastError(err);
-		}
-	};
+  const getIntegrationValue = key => {
+    const { value } = integrations.find(s => s.key === key);
+    return value;
+  };
 
-	const getIntegrationValue = key => {
-		const { value } = integrations.find(s => s.key === key);
-		return value;
-	};
+  return (
+    <div className={classes.root}>
+      <Container maxWidth="md">
+        <Typography 
+          variant="h4" 
+          className={classes.pageTitle}
+        >
+          {i18n.t("integrations.title")}
+        </Typography>
 
-	return (
-		<div className={classes.root}>
-			<Container className={classes.container} >
-				<Typography variant="body2" gutterBottom>
-					<Title>{i18n.t("integrations.title")}</Title>
-				</Typography>
+        <Card className={classes.card}>
+          <CardHeader 
+            title={i18n.t("integrations.integrations.openai.title")}
+            className={classes.cardHeader}
+            titleTypographyProps={{variant: 'h6'}}
+          />
+          <CardContent className={classes.cardContent}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  className={classes.textField}
+                  variant="outlined"
+                  label={i18n.t("integrations.integrations.openai.organization")}
+                  name="organization"
+                  value={integrations && integrations.length > 0 && getIntegrationValue("organization")}
+                  onChange={handleChangeIntegration}
+                />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <TextField
+                  fullWidth
+                  className={classes.textField}
+                  variant="outlined"
+                  label={i18n.t("integrations.integrations.openai.apikey")}
+                  name="apikey"
+                  type="password"
+                  value={integrations && integrations.length > 0 && getIntegrationValue("apikey")}
+                  onChange={handleChangeIntegration}
+                />
+              </Grid>
+            </Grid>
+          </CardContent>
+        </Card>
 
-
-				<Paper className={classes.paper1}>
-					<Typography align="center" variant="body1">
-						{i18n.t("integrations.integrations.openai.title")}
-					</Typography>
-					<Paper elevation={4} className={classes.paper}>
-						<TextField
-							style={{ marginRight: "1%", width: "50%" }}
-							id="organization"
-							name="organization"
-							margin="dense"
-							label={i18n.t("integrations.integrations.openai.organization")}
-							variant="outlined"
-							value={integrations && integrations.length > 0 && getIntegrationValue("organization")}
-							onChange={handleChangeIntegration}
-							fullWidth
-						/>
-						<TextField
-							style={{ marginRight: "1%", width: "50%" }}
-							id="apikey"
-							name="apikey"
-							label={i18n.t("integrations.integrations.openai.apikey")}
-							margin="dense"
-							variant="outlined"
-							onChange={handleChangeIntegration}
-							fullWidth
-							value={integrations && integrations.length > 0 && getIntegrationValue("apikey")}
-						/>
-					</Paper>
-				</Paper>
-
-				<Paper className={classes.paper1}>
-					<Typography align="center" variant="body1">
-						{i18n.t("integrations.integrations.n8n.title")}
-					</Typography>
-					<Paper elevation={4} className={classes.paper}>
-						<TextField
-							style={{ width: "100%" }}
-							id="urlApiN8N"
-							name="urlApiN8N"
-							margin="dense"
-							label={i18n.t("integrations.integrations.n8n.urlApiN8N")}
-							variant="outlined"
-							value={integrations && integrations.length > 0 && getIntegrationValue("urlApiN8N")}
-							onChange={handleChangeIntegration}
-							fullWidth
-						/>
-					</Paper>
-				</Paper>
-
-			</Container>
-		</div>
-	);
+        <Card className={classes.card}>
+          <CardHeader 
+            title={i18n.t("integrations.integrations.n8n.title")}
+            className={classes.cardHeader}
+            titleTypographyProps={{variant: 'h6'}}
+          />
+          <CardContent className={classes.cardContent}>
+            <TextField
+              fullWidth
+              className={classes.textField}
+              variant="outlined"
+              label={i18n.t("integrations.integrations.n8n.urlApiN8N")}
+              name="urlApiN8N"
+              value={integrations && integrations.length > 0 && getIntegrationValue("urlApiN8N")}
+              onChange={handleChangeIntegration}
+            />
+          </CardContent>
+        </Card>
+      </Container>
+    </div>
+  );
 };
 
 export default Integrations;
