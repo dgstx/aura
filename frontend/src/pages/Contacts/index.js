@@ -183,9 +183,9 @@ const Contacts = () => {
     setFilteredTags(tags);
   };
 
-  // const handleSearch = (event) => {
-  //   setSearchParam(event.target.value.toLowerCase());
-  // };
+   const handleSearch = (event) => {
+     setSearchParam(event.target.value.toLowerCase());
+   };
 
   const handleOpenContactModal = () => {
     setSelectedContactId(null);
@@ -257,16 +257,10 @@ const Contacts = () => {
   };
 
   const formatPhoneNumber = (number) => {
-    if (!number) return "-";
     if (number.startsWith('55') && number.length === 13) {
       const ddd = number.slice(2, 4);
       const firstPart = number.slice(4, 9);
       const secondPart = number.slice(9);
-      return `(${ddd}) ${firstPart}-${secondPart}`;
-    } else if (number.startsWith('55') && number.length === 12) {
-      const ddd = number.slice(2, 4);
-      const firstPart = number.slice(4, 8);
-      const secondPart = number.slice(8);
       return `(${ddd}) ${firstPart}-${secondPart}`;
     }
 
@@ -343,7 +337,7 @@ const Contacts = () => {
             <CSVLink
               className={classes.csvbtn}
               separator=";"
-              filename={'contacts.csv'}
+              filename={'wasap-contacts.csv'}
               data={
                 contacts.map((contact) => ({
                   name: contact.name,
@@ -390,10 +384,19 @@ const Contacts = () => {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox"></TableCell>
-              <TableCell>{i18n.t("contacts.table.name")}</TableCell>
-              <TableCell align="center">{i18n.t("contacts.table.whatsapp")}</TableCell>
-              <TableCell align="center">{i18n.t("contacts.table.actions")}</TableCell>
+              <TableCell padding="checkbox" />
+              <TableCell>
+                {i18n.t("contacts.table.name")}
+              </TableCell>
+              <TableCell align="center">
+                {i18n.t("contacts.table.whatsapp")}
+              </TableCell>
+              <TableCell align="center">
+                {i18n.t("contacts.table.email")}
+              </TableCell>
+              <TableCell align="center">
+                {i18n.t("contacts.table.actions")}
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -410,37 +413,29 @@ const Contacts = () => {
                 .map((contact) => (
                   <TableRow key={contact.id}>
                     <TableCell style={{ paddingRight: 0 }}>
-                      <Avatar src={contact.profilePicUrl} className={classes.avatar} alt="contact_image" />
+                      {<Avatar src={contact.profilePicUrl} className={classes.avatar} />}
                     </TableCell>
                     <TableCell>{contact.name}</TableCell>
                     <TableCell align="center">
-                      {contact.number ? (
-                        <>
-                          <IconButton size="small" onClick={() => handleSaveTicket(contact.id)}>
-                            <Tooltip title="WhatsApp" arrow placement="left" >
-                              <WhatsApp style={{ color: "#075e54" }} />
-                            </Tooltip>
-                          </IconButton>
-                          {user.isTricked === "enabled" ? formatPhoneNumber(contact.number) : formatPhoneNumber(contact.number).slice(0, -4) + "****"}
-                        </>
-                      ) : (
-                        "-"
-                      )}
+                      {user.isTricked === "enabled" ? formatPhoneNumber(contact.number) : formatPhoneNumber(contact.number).slice(0, -4) + "****"}
                     </TableCell>
+                    <TableCell align="center">{contact.email}</TableCell>
                     <TableCell align="center">
-                      <ContactChannels
-                        contact={contact}
-                        handleSaveTicket={handleSaveTicket}
-                        setContactTicket={setContactTicket}
-                        setNewTicketModalOpen={setNewTicketModalOpen}
-                      />
-                    </TableCell>
-                    <TableCell align="center">
-                      {contact.number && (
-                        <IconButton size="small" onClick={() => hadleEditContact(contact.id)}>
-                          <Edit color="secondary" />
-                        </IconButton>
-                      )}
+                      <IconButton
+                        size="small"
+                        onClick={() => {
+                          setContactTicket(contact);
+                          setNewTicketModalOpen(true);
+                        }}
+                      >
+                        <WhatsApp color="secondary" />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => hadleEditContact(contact.id)}
+                      >
+                        <Edit color="secondary" />
+                      </IconButton>
                       <Can
                         role={user.profile}
                         perform="contacts-page:deleteContact"
@@ -463,7 +458,7 @@ const Contacts = () => {
             </>
           </TableBody>
         </Table>
-      </Paper >
+      </Paper>
     </MainContainer >
   );
 };
