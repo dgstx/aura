@@ -20,7 +20,7 @@ import { toast } from "react-toastify";
 import { i18n } from "../../translate/i18n";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
-import ColorPicker from "../ColorPicker";
+import { ChromePicker } from "react-color";
 
 const useStyles = makeStyles((theme) => ({
     dialog: {
@@ -50,6 +50,17 @@ const useStyles = makeStyles((theme) => ({
         left: "50%",
         marginTop: -12,
         marginLeft: -12,
+    },
+    colorPickerPopover: {
+        position: "absolute",
+        zIndex: 2,
+    },
+    colorPickerCover: {
+        position: "fixed",
+        top: 0,
+        right: 0,
+        bottom: 0,
+        left: 0,
     },
 }));
 
@@ -163,6 +174,7 @@ const QueueModal = ({ open, onClose, queueId }) => {
                                         className={classes.textField}
                                         error={touched.color && Boolean(errors.color)}
                                         helperText={touched.color && errors.color}
+                                        onClick={() => setColorPickerModalOpen(true)}
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
@@ -182,13 +194,20 @@ const QueueModal = ({ open, onClose, queueId }) => {
                                             ),
                                         }}
                                     />
-                                    <ColorPicker
-                                        open={colorPickerModalOpen}
-                                        handleClose={() => setColorPickerModalOpen(false)}
-                                        onChange={(color) => {
-                                            setFieldValue("color", color);
-                                        }}
-                                    />
+                                    {colorPickerModalOpen && (
+                                        <div className={classes.colorPickerPopover}>
+                                            <div
+                                                className={classes.colorPickerCover}
+                                                onClick={() => setColorPickerModalOpen(false)}
+                                            />
+                                            <ChromePicker
+                                                color={values.color}
+                                                onChange={(color) => {
+                                                    setFieldValue("color", color.hex);
+                                                }}
+                                            />
+                                        </div>
+                                    )}
                                 </Grid>
                                 <Grid item xs={12}>
                                     <Field
