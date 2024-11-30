@@ -1,13 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-
-import {
-    Field,
-    Form,
-    Formik
-} from "formik";
+import { Field, Form, Formik } from "formik";
 import { toast } from "react-toastify";
 import * as Yup from "yup";
-
 import {
     Button,
     CircularProgress,
@@ -20,18 +14,15 @@ import {
     makeStyles,
     TextField
 } from "@material-ui/core";
-
 import { green } from "@material-ui/core/colors";
 import { Colorize } from "@material-ui/icons";
-import { ColorBox } from 'material-ui-color';
-
+import { ColorBox } from "material-ui-color";
 import { i18n } from "../../translate/i18n";
-
 import { AuthContext } from "../../context/Auth/AuthContext";
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
         flexWrap: "wrap",
@@ -53,20 +44,19 @@ const useStyles = makeStyles(theme => ({
         marginTop: -12,
         marginLeft: -12,
     },
-    formControl: {
-        margin: theme.spacing(1),
-        minWidth: 120,
-    },
-    colorAdorment: {
+    colorAdornment: {
         width: 20,
         height: 20,
     },
+    dialogContent: {
+        borderRadius: 13,  // Aplicando o borderRadius apenas na área da caixa de diálogo
+    }
 }));
 
 const TagSchema = Yup.object().shape({
     name: Yup.string()
         .min(3, "Mensagem muito curta")
-        .required("Obrigatório")
+        .required("Obrigatório"),
 });
 
 const TagModal = ({ open, onClose, tagId, reload }) => {
@@ -75,23 +65,20 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
     const [colorPickerModalOpen, setColorPickerModalOpen] = useState(false);
     const initialState = {
         name: "",
-        color: ""
+        color: "",
     };
     const [tag, setTag] = useState(initialState);
 
     useEffect(() => {
-        try {
-            (async () => {
-                if (!tagId) return;
-
+        if (!tagId) return;
+        (async () => {
+            try {
                 const { data } = await api.get(`/tags/${tagId}`);
-                setTag(prevState => {
-                    return { ...prevState, ...data };
-                });
-            })()
-        } catch (err) {
-            toastError(err);
-        }
+                setTag((prevState) => ({ ...prevState, ...data }));
+            } catch (err) {
+                toastError(err);
+            }
+        })();
     }, [tagId, open]);
 
     const handleClose = () => {
@@ -100,7 +87,7 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
         onClose();
     };
 
-    const handleSaveTag = async values => {
+    const handleSaveTag = async (values) => {
         const tagData = { ...values, userId: user.id };
         try {
             if (tagId) {
@@ -109,7 +96,7 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
                 await api.post("/tags", tagData);
             }
             toast.success(i18n.t("tagModal.success"));
-            if (typeof reload == 'function') {
+            if (typeof reload === "function") {
                 reload();
             }
         } catch (err) {
@@ -119,123 +106,111 @@ const TagModal = ({ open, onClose, tagId, reload }) => {
     };
 
     return (
-        <div className={classes.root}>
-            <Dialog
-                open={open}
-                onClose={handleClose}
-                maxWidth="xs"
-                fullWidth
-                scroll="paper"
+        <Dialog
+            open={open}
+            onClose={handleClose}
+            maxWidth="xs"
+            fullWidth
+            scroll="paper"
+            className={classes.dialogContent} // Aplicando borderRadius aqui
+        >
+            <DialogTitle id="form-dialog-title">
+                {tagId ? i18n.t("tagModal.title.edit") : i18n.t("tagModal.title.add")}
+            </DialogTitle>
+            <Formik
+                initialValues={tag}
+                enableReinitialize
+                validationSchema={TagSchema}
+                onSubmit={(values, actions) => {
+                    handleSaveTag(values);
+                    actions.setSubmitting(false);
+                }}
             >
-                <DialogTitle id="form-dialog-title">
-                    {(tagId ? `${i18n.t("tagModal.title.edit")}` : `${i18n.t("tagModal.title.add")}`)}
-                </DialogTitle>
-                <Formik
-                    initialValues={tag}
-                    enableReinitialize={true}
-                    validationSchema={TagSchema}
-                    onSubmit={(values, actions) => {
-                        setTimeout(() => {
-                            handleSaveTag(values);
-                            actions.setSubmitting(false);
-                        }, 400);
-                    }}
-                >
-                    {({ touched, errors, isSubmitting, values }) => (
-                        <Form>
-                            <DialogContent dividers>
-                                <div className={classes.multFieldLine}>
-                                    <Field
-                                        as={TextField}
-                                        label={i18n.t("tagModal.form.name")}
-                                        name="name"
-                                        error={touched.name && Boolean(errors.name)}
-                                        helperText={touched.name && errors.name}
-                                        variant="outlined"
-                                        margin="dense"
-                                        onChange={(e) => setTag(prev => ({ ...prev, name: e.target.value }))}
-                                        fullWidth
-                                    />
-                                </div>
-                                <br />
-                                <div className={classes.multFieldLine}>
-                                    <Field
-                                        as={TextField}
-                                        fullWidth
-                                        label={i18n.t("tagModal.form.color")}
-                                        name="color"
-                                        id="color"
-                                        error={touched.color && Boolean(errors.color)}
-                                        helperText={touched.color && errors.color}
-                                        InputProps={{
-                                            startAdornment: (
-                                                <InputAdornment position="start">
-                                                    <div
-                                                        style={{ backgroundColor: values.color }}
-                                                        className={classes.colorAdorment}
-                                                    ></div>
-                                                </InputAdornment>
-                                            ),
-                                            endAdornment: (
-                                                <IconButton
-                                                    size="small"
-                                                    color="secondary"
-                                                    onClick={() => setColorPickerModalOpen(!colorPickerModalOpen)}
-                                                >
-                                                    <Colorize />
-                                                </IconButton>
-                                            ),
-                                        }}
-                                        variant="outlined"
-                                        margin="dense"
-                                    />
-                                </div>
-                                {colorPickerModalOpen && (
-                                    <div>
-                                        <ColorBox
-                                            disableAlpha={true}
-                                            hslGradient={false}
-                                            style={{ margin: '20px auto 0' }}
-                                            value={tag.color}
-                                            onChange={val => {
-                                                setTag(prev => ({ ...prev, color: `#${val.hex}` }));
-                                            }}
-                                        />
-                                    </div>
-                                )}
-                            </DialogContent>
-                            <DialogActions>
-                                <Button
-                                    onClick={handleClose}
-                                    color="secondary"
-                                    disabled={isSubmitting}
+                {({ touched, errors, isSubmitting, values }) => (
+                    <Form>
+                        <DialogContent dividers>
+                            <div className={classes.multFieldLine}>
+                                <Field
+                                    as={TextField}
+                                    label={i18n.t("tagModal.form.name")}
+                                    name="name"
+                                    error={touched.name && Boolean(errors.name)}
+                                    helperText={touched.name && errors.name}
                                     variant="outlined"
-                                >
-                                    {i18n.t("tagModal.buttons.cancel")}
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    color="primary"
-                                    disabled={isSubmitting}
-                                    variant="contained"
-                                    className={classes.btnWrapper}
-                                >
-                                    {tagId
-                                        ? `${i18n.t("tagModal.buttons.okEdit")}`
-                                        : `${i18n.t("tagModal.buttons.okAdd")}`}
-                                    {isSubmitting && (
-                                        <CircularProgress
-                                            size={24}
-                                            className={classes.buttonProgress}
-                                        />
-                                    )}
-                                </Button>
-                            </DialogActions>
-                        </Form>
-                    )}
-                </Formik>
-            </Dialog>
-        </div>
+                                    margin="dense"
+                                    onChange={(e) => setTag((prev) => ({ ...prev, name: e.target.value }))}
+                                    fullWidth
+                                />
+                            </div>
+                            <div className={classes.multFieldLine}>
+                                <Field
+                                    as={TextField}
+                                    fullWidth
+                                    label={i18n.t("tagModal.form.color")}
+                                    name="color"
+                                    error={touched.color && Boolean(errors.color)}
+                                    helperText={touched.color && errors.color}
+                                    InputProps={{
+                                        startAdornment: (
+                                            <InputAdornment position="start">
+                                                <div
+                                                    style={{ backgroundColor: values.color }}
+                                                    className={classes.colorAdornment}
+                                                />
+                                            </InputAdornment>
+                                        ),
+                                        endAdornment: (
+                                            <IconButton
+                                                size="small"
+                                                color="secondary"
+                                                onClick={() => setColorPickerModalOpen(!colorPickerModalOpen)}
+                                            >
+                                                <Colorize />
+                                            </IconButton>
+                                        ),
+                                    }}
+                                    variant="outlined"
+                                    margin="dense"
+                                />
+                            </div>
+                            {colorPickerModalOpen && (
+                                <div>
+                                    <ColorBox
+                                        disableAlpha
+                                        hslGradient={false}
+                                        style={{ margin: "20px auto 0" }}
+                                        value={tag.color}
+                                        onChange={(val) => setTag((prev) => ({ ...prev, color: `#${val.hex}` }))}
+                                    />
+                                </div>
+                            )}
+                        </DialogContent>
+                        <DialogActions>
+                            <Button
+                                onClick={handleClose}
+                                color="secondary"
+                                disabled={isSubmitting}
+                                variant="outlined"
+                            >
+                                {i18n.t("tagModal.buttons.cancel")}
+                            </Button>
+                            <Button
+                                type="submit"
+                                color="primary"
+                                disabled={isSubmitting}
+                                variant="contained"
+                                className={classes.btnWrapper}
+                            >
+                                {tagId ? i18n.t("tagModal.buttons.okEdit") : i18n.t("tagModal.buttons.okAdd")}
+                                {isSubmitting && (
+                                    <CircularProgress size={24} className={classes.buttonProgress} />
+                                )}
+                            </Button>
+                        </DialogActions>
+                    </Form>
+                )}
+            </Formik>
+        </Dialog>
     );
 };
 
