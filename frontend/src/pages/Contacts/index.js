@@ -183,9 +183,9 @@ const Contacts = () => {
     setFilteredTags(tags);
   };
 
-   const handleSearch = (event) => {
-     setSearchParam(event.target.value.toLowerCase());
-   };
+  // const handleSearch = (event) => {
+  //   setSearchParam(event.target.value.toLowerCase());
+  // };
 
   const handleOpenContactModal = () => {
     setSelectedContactId(null);
