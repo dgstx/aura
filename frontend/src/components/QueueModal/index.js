@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Button,
     CircularProgress,
@@ -137,7 +137,7 @@ const QueueModal = ({ open, onClose, queueId }) => {
                     actions.setSubmitting(false);
                 }}
             >
-                {({ touched, errors, values, isSubmitting }) => (
+                {({ touched, errors, values, isSubmitting, setFieldValue }) => (
                     <Form>
                         <DialogContent dividers>
                             <Grid container spacing={2}>
@@ -186,8 +186,7 @@ const QueueModal = ({ open, onClose, queueId }) => {
                                         open={colorPickerModalOpen}
                                         handleClose={() => setColorPickerModalOpen(false)}
                                         onChange={(color) => {
-                                            values.color = color;
-                                            setQueue((prev) => ({ ...prev, color }));
+                                            setFieldValue("color", color);
                                         }}
                                     />
                                 </Grid>
