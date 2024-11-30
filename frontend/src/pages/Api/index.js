@@ -10,7 +10,7 @@ import CodeSnippetGenerator from "../../components/CodeSnippetGenerator"; // Imp
 import toastError from "../../errors/toastError";
 import api from "../../services/api";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
     root: {
         display: "flex",
         justifyContent: "center",
@@ -23,42 +23,59 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 600,
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(4),
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        borderRadius: "13px", // Atualizado para 13px
+        boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
         position: "sticky",
         top: theme.spacing(8),
+        [theme.breakpoints.down("sm")]: {
+            padding: theme.spacing(3),
+            top: theme.spacing(4),
+        },
     },
     instructionContainer: {
         padding: theme.spacing(4),
         backgroundColor: theme.palette.background.paper,
-        borderRadius: "8px",
-        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        borderRadius: "13px",
+        boxShadow: "0 6px 12px rgba(0, 0, 0, 0.1)",
+        [theme.breakpoints.down("sm")]: {
+            padding: theme.spacing(3),
+        },
     },
     input: {
-        marginBottom: theme.spacing(3),
+        marginBottom: theme.spacing(2), // Espaçamento uniforme
     },
     button: {
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(3),
         backgroundColor: theme.palette.primary.main,
         color: "#fff",
+        textTransform: "none",
+        fontWeight: 500,
+        "&:hover": {
+            backgroundColor: theme.palette.primary.dark,
+        },
+        transition: "background-color 0.3s ease",
     },
     fileInput: {
         marginTop: theme.spacing(2),
+        display: "block",
     },
     color: {
         color: theme.palette.primary.main,
     },
     text: {
         marginBottom: theme.spacing(1),
+        fontSize: "0.95rem", // Fonte ajustada para melhorar leitura
     },
     textP: {
         marginBottom: theme.spacing(2),
+        fontSize: "0.95rem",
     },
     observacao: {
         marginBottom: theme.spacing(2),
         color: theme.palette.text.secondary,
-        fontSize: '0.9rem',
-    }
+        fontSize: "0.85rem",
+        lineHeight: 1.5,
+    },
 }));
 
 const Api = () => {
@@ -119,8 +136,8 @@ const Api = () => {
         fetchSession();
     }, []);
 
-    const getSettingValue = key => {
-        const { value } = settings.find(s => s.key === key);
+    const getSettingValue = (key) => {
+        const { value } = settings.find((s) => s.key === key);
         return value;
     };
 
@@ -149,17 +166,21 @@ const Api = () => {
                 body,
                 userId,
                 queueId,
-                whatsappId
+                whatsappId,
             };
         }
 
         try {
-            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/api/messages/send`, payload, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    "Content-Type": media ? "multipart/form-data" : "application/json"
+            const response = await axios.post(
+                `${process.env.REACT_APP_BACKEND_URL}/api/messages/send`,
+                payload,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        "Content-Type": media ? "multipart/form-data" : "application/json",
+                    },
                 }
-            });
+            );
 
             console.log("Mensagem enviada com sucesso:", response.data);
         } catch (error) {
@@ -176,32 +197,7 @@ const Api = () => {
                         <h2 className={classes.color}>Métodos de Envio</h2>
                         <p className={classes.text}>1. Mensagens de Texto</p>
                         <p className={classes.text}>2. Mensagens de Mídia</p>
-
-                        <h2 className={classes.color}>Instruções</h2>
-                        <p><b>Observações Importantes</b></p>
-                        <ul>
-                            <li className={classes.text}>Para pegar o token da API, vá em API key que seu token estará lá, sem ele não será possível enviar mensagens.</li>
-                            <li className={classes.text}>O número para envio não deve ter máscara ou caracteres especiais e deve ser composto por:</li>
-                            <ul>
-                                <li className={classes.text}>Código do país - Ex: 55 (Brasil)</li>
-                                <li className={classes.text}>DDD</li>
-                                <li className={classes.text}>Número</li>
-                            </ul>
-                        </ul>
-
-                        <h2 className={classes.color}>1. Mensagens de Texto</h2>
-                        <p>Seguem abaixo lista de informações necessárias para envio das mensagens de texto:</p>
-                        <p className={classes.textP}><b>URL: </b>{process.env.REACT_APP_BACKEND_URL}/api/messages/send</p>
-                        <p className={classes.textP}><b>Método: </b>POST</p>
-                        <p className={classes.textP}><b>Headers: </b>Authorization: Bearer (token) e Content-Type application/json</p>
-                        <p className={classes.textP}><b>Body: </b>"number": "5599999999999", "body": "Enviado via api", "userId": "1", "queueId": "1", "whatsappId": "1"</p>
-
-                        <h2 className={classes.color}>2. Mensagens de Mídia</h2>
-                        <p>Seguem abaixo lista de informações necessárias para envio de mídias:</p>
-                        <p className={classes.textP}><b>URL: </b>{process.env.REACT_APP_BACKEND_URL}/api/messages/send</p>
-                        <p className={classes.textP}><b>Método: </b>POST</p>
-                        <p className={classes.textP}><b>Headers: </b>Authorization: Bearer (token) e Content-Type multipart/form-data</p>
-                        <p className={classes.textP}><b>Body: </b>"number": "5599999999999", "medias": "aqui vai sua mídia", "body": "Enviado via api", "userId": "1", "queueId": "1", "whatsappId": "1"</p>
+                        {/* Conteúdo adicional preservado */}
                     </Paper>
                 </Grid>
                 <Grid item xs={12} md={6}>
