@@ -43,12 +43,10 @@ interface Session extends Client {
 const writeFileAsync = promisify(writeFile);
 
 const verifyContact = async (msgContact: WbotContact): Promise<Contact> => {
-  const profilePicUrl = await msgContact.getProfilePicUrl();
 
   const contactData = {
     name: msgContact.name || msgContact.pushname || msgContact.id.user,
     number: msgContact.id.user,
-    profilePicUrl,
     isGroup: msgContact.isGroup
   };
 
@@ -187,11 +185,58 @@ const verifyMediaMessage = async (
     logger.error(err);
   }
 
+  let $tipoArquivo: string;
+
+  switch (media.mimetype.split("/")[0]) {
+    case "audio":
+      $tipoArquivo = "🔉 Mensagem de audio";
+      break;
+
+    case "image":
+      $tipoArquivo = "🖼️ Arquivo de imagem";
+      break;
+
+    case "video":
+      $tipoArquivo = "🎬 Arquivo de vídeo";
+      break;
+
+    case "document":
+      $tipoArquivo = "📘 Documento";
+      break;
+
+    case "application":
+      $tipoArquivo = "📎 Arquivo";
+      break;
+
+    case "ciphertext":
+      $tipoArquivo = "⚠️ Notificação";
+      break;
+
+    case "e2e_notification":
+      $tipoArquivo = "⛔ Notificação";
+      break;
+
+    case "revoked":
+      $tipoArquivo = "❌ Apagado";
+      break;
+    default:
+      $tipoArquivo = "📎 Arquivo";
+      break;
+  }
+
+  let $strBody: string;
+
+  if (msg.fromMe === true) {
+    $strBody = msg.body;
+  } else {
+    $strBody = msg.body;
+  }
+
   const messageData = {
     id: msg.id.id,
     ticketId: ticket.id,
     contactId: msg.fromMe ? undefined : contact.id,
-    body: msg.body,
+    body: $strBody,
     fromMe: msg.fromMe,
     read: msg.fromMe,
     mediaUrl: media.filename,
@@ -199,19 +244,60 @@ const verifyMediaMessage = async (
     quotedMsgId: quotedMsg?.id
   };
 
-  await ticket.update({ lastMessage: msg.body });
+  if (msg.fromMe === true) {
+    await ticket.update({
+      lastMessage: `🢅 ${$tipoArquivo}` || `🢅 ${$tipoArquivo}`
+    });
+  } else {
+    await ticket.update({
+      lastMessage: `🢇 ${$tipoArquivo}` || `🢇 ${$tipoArquivo}`
+    });
+  }
   const newMessage = await CreateMessageService({ messageData });
 
   return newMessage;
 };
 
-const prepareLocation = (msg: WbotMessage): WbotMessage => {
+const getGeocode = async (
+  latitude: number,
+  longitude: number
+): Promise<string> => {
+  const apiKey = await Integration.findOne({
+    where: { key: "apiMaps" }
+  });
+
+  const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey?.value}`;
+
+  return new Promise((resolve, reject) => {
+    request(url, { json: true }, (err: any, res: any, body: any) => {
+      if (err) {
+        reject(err);
+      } else if (body.results && body.results.length > 0) {
+        resolve(body.results[0].formatted_address);
+      } else {
+        resolve(`${latitude}, ${longitude}`);
+      }
+    });
+  });
+};
+
+const prepareLocation = async (msg: WbotMessage): Promise<WbotMessage> => {
   const gmapsUrl = `https://maps.google.com/maps?q=${msg.location.latitude}%2C${msg.location.longitude}&z=17`;
-  msg.body = `data:image/png;base64,${msg.body}|${gmapsUrl}`;
-  msg.body += `|${msg.location.options
-      ? msg.location.options
-      : `${msg.location.latitude}, ${msg.location.longitude}`
-    }`;
+
+  try {
+    const address = await getGeocode(
+      Number(msg.location.latitude),
+      Number(msg.location.longitude)
+    );
+
+    msg.body = `data:image/png;base64,${msg.body}|${gmapsUrl}`;
+    msg.body += `|${address || `${msg.location.latitude}, ${msg.location.longitude}`
+      }`;
+  } catch (error) {
+    console.error("Erro ao preparar a localização:", error);
+    msg.body += `|${msg.location.latitude}, ${msg.location.longitude}`;
+  }
+
   return msg;
 };
 
@@ -220,7 +306,7 @@ const verifyMessage = async (
   ticket: Ticket,
   contact: Contact
 ) => {
-  if (msg.type === "location") msg = prepareLocation(msg);
+  if (msg.type === "location") msg = await prepareLocation(msg);
 
   const quotedMsg = await verifyQuotedMessage(msg);
   const messageData = {
@@ -234,14 +320,22 @@ const verifyMessage = async (
     quotedMsgId: quotedMsg?.id
   };
 
-  await ticket.update({
-    lastMessage:
-      msg.type === "location"
-        ? msg.location.options
-          ? `Localization - ${msg.location.options}`
-          : "Localization"
-        : msg.body
-  });
+  if (msg.fromMe === true) {
+    await ticket.update({
+      fromMe: msg.fromMe,
+      lastMessage:
+        msg.type === "location"
+          ? "🢅 🌍 Localization - Ver no Google Maps"
+          : `🢅 ${msg.body}`
+    });
+  } else {
+    await ticket.update({
+      lastMessage:
+        msg.type === "location"
+          ? "🢇 🌍 Localization - Ver no Google Maps"
+          : `🢇 ${msg.body}`
+    });
+  }
 
   await CreateMessageService({ messageData });
 };
@@ -617,6 +711,14 @@ const handleMessage = async (
       );
       await verifyMessage(sentMessage, ticket, contact);
     }
+    const profilePicUrl = await msgContact.getProfilePicUrl();
+    const contactData = {
+      name: msgContact.name || msgContact.pushname || msgContact.id.user,
+      number: msgContact.id.user,
+      profilePicUrl,
+      isGroup: msgContact.isGroup
+    };
+    await CreateOrUpdateContactService(contactData);
   } catch (err) {
     Sentry.captureException(err);
     logger.error(`Error handling whatsapp message: Err: ${err}`);
@@ -673,16 +775,22 @@ const handleMsgEdit = async (
       }
     ]
   });
+
   if (!editedMsg) return;
+
   const io = getIO();
+
   try {
     const messageData = {
       messageId: msg.id.id,
       body: oldBody
     };
+
     await OldMessage.upsert(messageData);
     await editedMsg.update({ body: newBody, isEdited: true });
+
     await editedMsg.reload();
+
     io.to(editedMsg.ticketId.toString()).emit("appMessage", {
       action: "update",
       message: editedMsg
