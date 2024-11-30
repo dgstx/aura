@@ -152,7 +152,7 @@ const QueueModal = ({ open, onClose, queueId }) => {
                     <Form>
                         <DialogContent dividers>
                             <Grid container spacing={2}>
-                                <Grid item xs={12}>
+                                <Grid item xs={6}>
                                     <Field
                                         as={TextField}
                                         label={i18n.t("queueModal.form.name")}
@@ -164,7 +164,7 @@ const QueueModal = ({ open, onClose, queueId }) => {
                                         helperText={touched.name && errors.name}
                                     />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid item xs={6}>
                                     <Field
                                         as={TextField}
                                         label={i18n.t("queueModal.form.color")}
