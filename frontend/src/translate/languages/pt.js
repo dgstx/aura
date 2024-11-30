@@ -50,7 +50,7 @@ const messages = {
       dashboard: {
         messages: {
           inAttendance: {
-            title: "Em Atendimento"
+            title: "Ativos"
           },
           waiting: {
             title: "Aguardando"
@@ -361,7 +361,7 @@ const messages = {
           message: "Mensagem de",
         },
         tabs: {
-          open: { title: "Em Atendimento" },
+          open: { title: "Ativos" },
           closed: { title: "Encerrados" },
           search: { title: "Busca" },
         },
@@ -369,7 +369,7 @@ const messages = {
           placeholder: "Buscar tickets e mensagens",
         },
         buttons: {
-          showAll: "Todos",
+          showAll: "Ver Todos",
         },
       },
       transferTicketModal: {
@@ -685,7 +685,7 @@ const messages = {
       messagesInput: {
         placeholderOpen: "Digite uma mensagem",
         placeholderClosed: "Reabra ou aceite esse ticket para enviar uma mensagem.",
-        signMessage: "Assinar",
+        signMessage: "Assinatura",
       },
       message: {
         edited: "Editada"
