@@ -1,8 +1,13 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import { useHistory } from "react-router-dom";
 import * as Yup from "yup";
-import { Formik, Form, Field } from "formik";
+import {
+    Formik,
+    Form,
+    Field
+} from "formik";
 import { toast } from "react-toastify";
+
 import {
     Button,
     Dialog,
@@ -19,9 +24,16 @@ import {
     InputAdornment,
     IconButton
 } from '@material-ui/core';
-import { Visibility, VisibilityOff } from '@material-ui/icons';
+
+import {
+    Visibility,
+    VisibilityOff
+} from '@material-ui/icons';
+
 import { green } from "@material-ui/core/colors";
+
 import { i18n } from "../../translate/i18n";
+
 import api from "../../services/api";
 import toastError from "../../errors/toastError";
 import QueueSelect from "../QueueSelect";
@@ -31,14 +43,18 @@ import useWhatsApps from "../../hooks/useWhatsApps";
 
 const useStyles = makeStyles(theme => ({
     root: {
+        backgroundColor: theme.palette.background.paper,
         display: "flex",
-        flexWrap: "wrap",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: theme.spacing(2),
+        borderRadius: 13,
     },
     multFieldLine: {
         display: "flex",
-        "& > *:not(:last-child)": {
-            marginRight: theme.spacing(1),
-        },
+        flexDirection: "column",
+        width: "100%",
+        marginBottom: theme.spacing(2),
     },
     btnWrapper: {
         position: "relative",
@@ -54,14 +70,23 @@ const useStyles = makeStyles(theme => ({
     formControl: {
         margin: theme.spacing(1),
         minWidth: 120,
+        width: "100%",
     },
     textField: {
-        margin: theme.spacing(1, 0),
-        borderRadius: 13,
+        marginBottom: theme.spacing(2),
+        width: "100%",
     },
     container: {
         display: 'flex',
-        flexWrap: 'wrap',
+        flexDirection: 'column',
+        width: '100%',
+    },
+    dialogContent: {
+        padding: theme.spacing(2),
+    },
+    dialogActions: {
+        justifyContent: "center",
+        padding: theme.spacing(2),
     },
 }));
 
@@ -146,9 +171,8 @@ const UserModal = ({ open, onClose, userId }) => {
                 maxWidth="xs"
                 fullWidth
                 scroll="paper"
-                classes={{ paper: classes.dialog }}
             >
-                <DialogTitle className={classes.dialogTitle}>
+                <DialogTitle id="form-dialog-title">
                     {userId
                         ? `${i18n.t("userModal.title.edit")}`
                         : `${i18n.t("userModal.title.add")}`}
@@ -166,7 +190,7 @@ const UserModal = ({ open, onClose, userId }) => {
                 >
                     {({ touched, errors, isSubmitting }) => (
                         <Form>
-                            <DialogContent dividers>
+                            <DialogContent dividers className={classes.dialogContent}>
                                 <div className={classes.multFieldLine}>
                                     <Field
                                         as={TextField}
@@ -178,7 +202,6 @@ const UserModal = ({ open, onClose, userId }) => {
                                         variant="outlined"
                                         margin="dense"
                                         className={classes.textField}
-                                        fullWidth
                                     />
                                     <Field
                                         as={TextField}
@@ -202,7 +225,6 @@ const UserModal = ({ open, onClose, userId }) => {
                                             )
                                         }}
                                         className={classes.textField}
-                                        fullWidth
                                     />
                                 </div>
                                 <div className={classes.multFieldLine}>
@@ -215,7 +237,6 @@ const UserModal = ({ open, onClose, userId }) => {
                                         variant="outlined"
                                         margin="dense"
                                         className={classes.textField}
-                                        fullWidth
                                     />
                                     <FormControl
                                         variant="outlined"
@@ -230,6 +251,7 @@ const UserModal = ({ open, onClose, userId }) => {
                                                     <InputLabel id="profile-selection-input-label">
                                                         {i18n.t("userModal.form.profile")}
                                                     </InputLabel>
+
                                                     <Field
                                                         as={Select}
                                                         label={i18n.t("userModal.form.profile")}
@@ -260,7 +282,7 @@ const UserModal = ({ open, onClose, userId }) => {
                                     role={loggedInUser.profile}
                                     perform="user-modal:editQueues"
                                     yes={() => (!loading &&
-                                        <FormControl variant="outlined" margin="dense" className={classes.formControl} fullWidth>
+                                        <FormControl variant="outlined" margin="dense" className={classes.formControl}>
                                             <InputLabel>{i18n.t("userModal.form.whatsapp")}</InputLabel>
                                             <Field
                                                 as={Select}
@@ -294,10 +316,13 @@ const UserModal = ({ open, onClose, userId }) => {
                                                 inputProps={{
                                                     step: 600, // 5 min
                                                 }}
-                                                fullWidth
                                                 name="startWork"
-                                                error={touched.startWork && Boolean(errors.startWork)}
-                                                helperText={touched.startWork && errors.startWork}
+                                                error={
+                                                    touched.startWork && Boolean(errors.startWork)
+                                                }
+                                                helperText={
+                                                    touched.startWork && errors.startWork
+                                                }
                                                 variant="outlined"
                                                 margin="dense"
                                                 className={classes.textField}
@@ -315,10 +340,13 @@ const UserModal = ({ open, onClose, userId }) => {
                                                 inputProps={{
                                                     step: 600, // 5 min
                                                 }}
-                                                fullWidth
                                                 name="endWork"
-                                                error={touched.endWork && Boolean(errors.endWork)}
-                                                helperText={touched.endWork && errors.endWork}
+                                                error={
+                                                    touched.endWork && Boolean(errors.endWork)
+                                                }
+                                                helperText={
+                                                    touched.endWork && errors.endWork
+                                                }
                                                 variant="outlined"
                                                 margin="dense"
                                                 className={classes.textField}
@@ -339,6 +367,7 @@ const UserModal = ({ open, onClose, userId }) => {
                                                 <InputLabel id="isTricked-selection-input-label">
                                                     {i18n.t("userModal.form.isTricked")}
                                                 </InputLabel>
+
                                                 <Field
                                                     as={Select}
                                                     label={i18n.t("userModal.form.isTricked")}
@@ -354,7 +383,7 @@ const UserModal = ({ open, onClose, userId }) => {
                                     />
                                 </FormControl>
                             </DialogContent>
-                            <DialogActions>
+                            <DialogActions className={classes.dialogActions}>
                                 <Button
                                     onClick={handleClose}
                                     color="secondary"
@@ -363,24 +392,23 @@ const UserModal = ({ open, onClose, userId }) => {
                                 >
                                     {i18n.t("userModal.buttons.cancel")}
                                 </Button>
-                                <div className={classes.btnWrapper}>
-                                    <Button
-                                        type="submit"
-                                        color="primary"
-                                        disabled={isSubmitting}
-                                        variant="contained"
-                                    >
-                                        {userId
-                                            ? `${i18n.t("userModal.buttons.okEdit")}`
-                                            : `${i18n.t("userModal.buttons.okAdd")}`}
-                                        {isSubmitting && (
-                                            <CircularProgress
-                                                size={24}
-                                                className={classes.buttonProgress}
-                                            />
-                                        )}
-                                    </Button>
-                                </div>
+                                <Button
+                                    type="submit"
+                                    color="primary"
+                                    disabled={isSubmitting}
+                                    variant="contained"
+                                    className={classes.btnWrapper}
+                                >
+                                    {userId
+                                        ? `${i18n.t("userModal.buttons.okEdit")}`
+                                        : `${i18n.t("userModal.buttons.okAdd")}`}
+                                    {isSubmitting && (
+                                        <CircularProgress
+                                            size={24}
+                                            className={classes.buttonProgress}
+                                        />
+                                    )}
+                                </Button>
                             </DialogActions>
                         </Form>
                     )}
