@@ -17,8 +17,7 @@ import {
   TableRow,
   Tooltip,
   TextField,
-  Grid,
-  Box
+  Grid
 } from "@material-ui/core";
 
 import {
@@ -60,11 +59,37 @@ const reducer = (state, action) => {
       } else {
         newContacts.push(contact);
       }
-      });
-      return [...state, ...newContacts];
-        }
-        return state;
-    };
+    });
+
+    return [...state, ...newContacts];
+  }
+
+  if (action.type === "UPDATE_CONTACTS") {
+    const contact = action.payload;
+    const contactIndex = state.findIndex((c) => c.id === contact.id);
+
+    if (contactIndex !== -1) {
+      state[contactIndex] = contact;
+      return [...state];
+    } else {
+      return [contact, ...state];
+    }
+  }
+
+  if (action.type === "DELETE_CONTACT") {
+    const contactId = action.payload;
+
+    const contactIndex = state.findIndex((c) => c.id === contactId);
+    if (contactIndex !== -1) {
+      state.splice(contactIndex, 1);
+    }
+    return [...state];
+  }
+
+  if (action.type === "RESET") {
+    return [];
+  }
+};
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
@@ -76,15 +101,16 @@ const useStyles = makeStyles((theme) => ({
     ...theme.scrollbarStyles,
   },
   csvbtn: {
-    textDecoration: 'none',
+    textDecoration: 'none'
   },
   avatar: {
     width: "50px",
     height: "50px",
-    borderRadius: "25%",
+    borderRadius: "25%"
   },
   buttonSize: {
-    borderRadius: "13px",
+    maxWidth: "36px",
+    maxHeight: "36px",
     padding: theme.spacing(1),
   },
   searchFilterContainer: {
@@ -98,22 +124,23 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #ccc',
     borderRadius: '13px',
     flex: 1,
+    width: '50%',
   },
   tagsFilter: {
-    borderRadius: '13px',
     flex: 1,
-    marginTop: theme.spacing(1),
+    width: '50%',
+    borderRadius: '13px',
   },
 }));
 
 const Contacts = ({ user, contacts, loading }) => {
   const classes = useStyles();
   const history = useHistory();
-  const { user: authUser } = useContext(AuthContext);
-  const [loadingState, setLoading] = useState(false);
+  const { user } = useContext(AuthContext);
+  const [loading, setLoading] = useState(false);
   const [pageNumber, setPageNumber] = useState(1);
   const [searchParam, setSearchParam] = useState("");
-  const [contactsState, dispatch] = useReducer(reducer, []);
+  const [contacts, dispatch] = useReducer(reducer, []);
   const [selectedContactId, setSelectedContactId] = useState(null);
   const [contactModalOpen, setContactModalOpen] = useState(false);
   const [deletingContact, setDeletingContact] = useState(null);
@@ -124,7 +151,7 @@ const Contacts = ({ user, contacts, loading }) => {
   const [contactTicket, setContactTicket] = useState({});
   const [filteredTags, setFilteredTags] = useState([]);
 
-   useEffect(() => {
+  useEffect(() => {
     dispatch({ type: "RESET" });
     setPageNumber(1);
   }, [searchParam]);
@@ -262,8 +289,8 @@ const Contacts = ({ user, contacts, loading }) => {
   };
 
   return (
-    <MainContainer>
-       <NewTicketModalPageContact
+    <MainContainer className={classes.mainContainer}>
+      <NewTicketModalPageContact
         modalOpen={newTicketModalOpen}
         initialContact={contactTicket}
         onClose={(ticket) => {
@@ -369,22 +396,21 @@ const Contacts = ({ user, contacts, loading }) => {
           />
         </MainHeaderButtonsWrapper>
       </MainHeader>
-
-      <Box mt={2} display="flex" justifyContent="space-between">
-        <TextField
-          fullWidth
-          variant="outlined"
-          placeholder={i18n.t("contacts.placeholder.search")}
-          value={searchParam}
-          onChange={handleSearch}
-          className={classes.searchInput}
-        />
-        <TagsFilter
-          onFilter={handleTagFilter}
-          className={classes.tagsFilter}
-        />
-      </Box>
-
+      <Grid container spacing={2} className={classes.searchFilterContainer}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Buscar contatos"
+            value={searchParam}
+            onChange={handleSearch}
+            className={classes.searchInput}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TagsFilter onFiltered={handleTagFilter} className={classes.tagsFilter} />
+        </Grid>
+      </Grid>
       <Paper
         className={classes.mainPaper}
         variant="outlined"
@@ -393,7 +419,7 @@ const Contacts = ({ user, contacts, loading }) => {
         <Table size="small">
           <TableHead>
             <TableRow>
-             <TableCell padding="checkbox" />
+              <TableCell padding="checkbox" />
               <TableCell>
                 {i18n.t("contacts.table.name")}
               </TableCell>
