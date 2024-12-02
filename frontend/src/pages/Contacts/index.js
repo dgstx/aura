@@ -121,6 +121,11 @@ const useStyles = makeStyles((theme) => ({
     border: '1px solid #ccc',
     borderRadius: '4px',
     flex: 1,
+    width: '50%',
+  },
+  tagsFilter: {
+    flex: 1,
+    width: '50%',
   },
 }));
 
@@ -395,7 +400,7 @@ const Contacts = () => {
           onChange={handleSearch}
           className={classes.searchInput}
         />
-        <TagsFilter onFiltered={handleTagFilter} />
+        <TagsFilter onFiltered={handleTagFilter} className={classes.tagsFilter} />
       </div>
       <Paper
         className={classes.mainPaper}
