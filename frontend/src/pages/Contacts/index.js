@@ -183,9 +183,9 @@ const Contacts = () => {
     setFilteredTags(tags);
   };
 
-   const handleSearch = (event) => {
-     setSearchParam(event.target.value.toLowerCase());
-   };
+  const handleSearch = (event) => {
+    setSearchParam(event.target.value.toLowerCase());
+  };
 
   const handleOpenContactModal = () => {
     setSelectedContactId(null);
@@ -376,6 +376,12 @@ const Contacts = () => {
         </MainHeaderButtonsWrapper>
       </MainHeader>
       <TagsFilter onFiltered={handleTagFilter} />
+      <input
+        type="text"
+        placeholder="Buscar contatos"
+        value={searchParam}
+        onChange={handleSearch}
+      />
       <Paper
         className={classes.mainPaper}
         variant="outlined"
