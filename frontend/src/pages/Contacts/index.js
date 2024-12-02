@@ -124,6 +124,10 @@ const useStyles = makeStyles((theme) => ({
     width: '50%',
   },
   tagsFilter: {
+    marginRight: theme.spacing(2),
+    padding: '13px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
     flex: 1,
     width: '50%',
   },
