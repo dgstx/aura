@@ -15,7 +15,9 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Tooltip
+  Tooltip,
+  TextField,
+  Grid
 } from "@material-ui/core";
 
 import {
@@ -95,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     margin: theme.spacing(1),
     overflowY: "scroll",
+    borderRadius: "13px",
     ...theme.scrollbarStyles,
   },
   csvbtn: {
@@ -392,16 +395,21 @@ const Contacts = () => {
           />
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <div className={classes.searchFilterContainer}>
-        <input
-          type="text"
-          placeholder="Buscar contatos"
-          value={searchParam}
-          onChange={handleSearch}
-          className={classes.searchInput}
-        />
-        <TagsFilter onFiltered={handleTagFilter} className={classes.tagsFilter} />
-      </div>
+      <Grid container spacing={2} className={classes.searchFilterContainer}>
+        <Grid item xs={12} sm={6}>
+          <TextField
+            fullWidth
+            variant="outlined"
+            placeholder="Buscar contatos"
+            value={searchParam}
+            onChange={handleSearch}
+            className={classes.searchInput}
+          />
+        </Grid>
+        <Grid item xs={12} sm={6}>
+          <TagsFilter onFiltered={handleTagFilter} className={classes.tagsFilter} />
+        </Grid>
+      </Grid>
       <Paper
         className={classes.mainPaper}
         variant="outlined"
