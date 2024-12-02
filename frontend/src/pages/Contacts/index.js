@@ -60,7 +60,11 @@ const reducer = (state, action) => {
       } else {
         newContacts.push(contact);
       }
-    });
+      });
+      return [...state, ...newContacts];
+        }
+        return state;
+    };
 
 const useStyles = makeStyles((theme) => ({
   mainPaper: {
