@@ -110,6 +110,18 @@ const useStyles = makeStyles((theme) => ({
     maxHeight: "36px",
     padding: theme.spacing(1),
   },
+  searchFilterContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: theme.spacing(2),
+  },
+  searchInput: {
+    marginRight: theme.spacing(2),
+    padding: '13px',
+    border: '1px solid #ccc',
+    borderRadius: '4px',
+    flex: 1,
+  },
 }));
 
 const Contacts = () => {
@@ -375,13 +387,16 @@ const Contacts = () => {
           />
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <TagsFilter onFiltered={handleTagFilter} />
-      <input
-        type="text"
-        placeholder="Buscar contatos"
-        value={searchParam}
-        onChange={handleSearch}
-      />
+      <div className={classes.searchFilterContainer}>
+        <input
+          type="text"
+          placeholder="Buscar contatos"
+          value={searchParam}
+          onChange={handleSearch}
+          className={classes.searchInput}
+        />
+        <TagsFilter onFiltered={handleTagFilter} />
+      </div>
       <Paper
         className={classes.mainPaper}
         variant="outlined"
@@ -465,7 +480,7 @@ const Contacts = () => {
           </TableBody>
         </Table>
       </Paper>
-    </MainContainer >
+    </MainContainer>
   );
 };
 
