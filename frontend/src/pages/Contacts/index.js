@@ -132,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Contacts = () => {
+const Contacts = ({ user, contacts, loading }) => {
   const classes = useStyles();
   const history = useHistory();
   const { user } = useContext(AuthContext);
@@ -149,6 +149,8 @@ const Contacts = () => {
   const [newTicketModalOpen, setNewTicketModalOpen] = useState(false);
   const [contactTicket, setContactTicket] = useState({});
   const [filteredTags, setFilteredTags] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredContacts, setFilteredContacts] = useState(contacts);
 
   useEffect(() => {
     dispatch({ type: "RESET" });
@@ -198,6 +200,19 @@ const Contacts = () => {
       socket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    const lowercasedFilter = searchTerm.toLowerCase();
+    const filteredData = contacts.filter(contact => {
+      return (
+        contact.name.toLowerCase().includes(lowercasedFilter) ||
+        contact.number.toLowerCase().includes(lowercasedFilter) ||
+        contact.email.toLowerCase().includes(lowercasedFilter) ||
+        (contact.tags && contact.tags.some(tag => tag.toLowerCase().includes(lowercasedFilter)))
+      );
+    });
+    setFilteredContacts(filteredData);
+  }, [searchTerm, contacts]);
 
   const handleTagFilter = (tags) => {
     setFilteredTags(tags);
@@ -415,6 +430,13 @@ const Contacts = () => {
         variant="outlined"
         onScroll={handleScroll}
       >
+        <TextField
+          label="Buscar contatos"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
         <Table size="small">
           <TableHead>
             <TableRow>
@@ -435,59 +457,50 @@ const Contacts = () => {
           </TableHead>
           <TableBody>
             <>
-              {contacts
-                .filter((contact) => {
-                  if (filteredTags.length === 0) return true;
-                  return (
-                    contact.tags &&
-                    contact.tags.length > 0 &&
-                    filteredTags.every(tag => contact.tags.some(ctag => ctag.id === tag.id))
-                  );
-                })
-                .map((contact) => (
-                  <TableRow key={contact.id}>
-                    <TableCell style={{ paddingRight: 0 }}>
-                      {<Avatar src={contact.profilePicUrl} className={classes.avatar} />}
-                    </TableCell>
-                    <TableCell>{contact.name}</TableCell>
-                    <TableCell align="center">
-                      {user.isTricked === "enabled" ? formatPhoneNumber(contact.number) : formatPhoneNumber(contact.number).slice(0, -4) + "****"}
-                    </TableCell>
-                    <TableCell align="center">{contact.email}</TableCell>
-                    <TableCell align="center">
-                      <IconButton
-                        size="small"
-                        onClick={() => {
-                          setContactTicket(contact);
-                          setNewTicketModalOpen(true);
-                        }}
-                      >
-                        <WhatsApp color="secondary" />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() => hadleEditContact(contact.id)}
-                      >
-                        <Edit color="secondary" />
-                      </IconButton>
-                      <Can
-                        role={user.profile}
-                        perform="contacts-page:deleteContact"
-                        yes={() => (
-                          <IconButton
-                            size="small"
-                            onClick={(e) => {
-                              setConfirmOpen(true);
-                              setDeletingContact(contact);
-                            }}
-                          >
-                            <DeleteOutline color="secondary" />
-                          </IconButton>
-                        )}
-                      />
-                    </TableCell>
-                  </TableRow>
-                ))}
+              {filteredContacts.map((contact) => (
+                <TableRow key={contact.id}>
+                  <TableCell style={{ paddingRight: 0 }}>
+                    {<Avatar src={contact.profilePicUrl} className={classes.avatar} />}
+                  </TableCell>
+                  <TableCell>{contact.name}</TableCell>
+                  <TableCell align="center">
+                    {user.isTricked === "enabled" ? formatPhoneNumber(contact.number) : formatPhoneNumber(contact.number).slice(0, -4) + "****"}
+                  </TableCell>
+                  <TableCell align="center">{contact.email}</TableCell>
+                  <TableCell align="center">
+                    <IconButton
+                      size="small"
+                      onClick={() => {
+                        setContactTicket(contact);
+                        setNewTicketModalOpen(true);
+                      }}
+                    >
+                      <WhatsApp color="secondary" />
+                    </IconButton>
+                    <IconButton
+                      size="small"
+                      onClick={() => hadleEditContact(contact.id)}
+                    >
+                      <Edit color="secondary" />
+                    </IconButton>
+                    <Can
+                      role={user.profile}
+                      perform="contacts-page:deleteContact"
+                      yes={() => (
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            setConfirmOpen(true);
+                            setDeletingContact(contact);
+                          }}
+                        >
+                          <DeleteOutline color="secondary" />
+                        </IconButton>
+                      )}
+                    />
+                  </TableCell>
+                </TableRow>
+              ))}
               {loading && <TableRowSkeleton avatar columns={3} />}
             </>
           </TableBody>
