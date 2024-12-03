@@ -32,7 +32,7 @@ import {
 } from "@material-ui/icons";
 import clsx from "clsx";
 import { Picker } from "@emoji-mart/react";
-import "@emoji-mart/css/emoji-mart.css";
+import '@emoji-mart/react/dist/emoji-mart.css';
 import MicRecorder from "mic-recorder-to-mp3";
 import PropTypes from "prop-types";
 import React, {
