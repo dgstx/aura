@@ -31,7 +31,7 @@ import {
   Send
 } from "@material-ui/icons";
 import clsx from "clsx";
-import { Picker } from "emoji-mart";
+import EmojiPicker from 'emoji-picker-react';
 import MicRecorder from "mic-recorder-to-mp3";
 import PropTypes from "prop-types";
 import React, {
@@ -224,11 +224,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const fetchEmojiData = async () => {
-  const response = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data');
-  return response.json();
-};
-
 const MessageInput = ({ ticketStatus }) => {
   const classes = useStyles();
   const { ticketId } = useParams();
@@ -247,7 +242,6 @@ const MessageInput = ({ ticketStatus }) => {
   const { user } = useContext(AuthContext);
   const [signMessage, setSignMessage] = useLocalStorage("signOption", true);
   const [channelType, setChannelType] = useState(null);
-  const [emojiData, setEmojiData] = useState(null);
 
   useEffect(() => {
     inputRef.current.focus();
@@ -284,14 +278,6 @@ const MessageInput = ({ ticketStatus }) => {
     // eslint-disable-next-line
   }, [onDragEnter === true]);
 
-  useEffect(() => {
-    const getData = async () => {
-      const data = await fetchEmojiData();
-      setEmojiData(data);
-    };
-    getData();
-  }, []);
-
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
@@ -306,8 +292,8 @@ const MessageInput = ({ ticketStatus }) => {
     setTypeBar(false);
   };
 
-  const handleAddEmoji = (emoji) => {
-    setInputMessage((prevState) => prevState + emoji.native);
+  const handleAddEmoji = (emojiObject) => {
+    setInputMessage((prevState) => prevState + emojiObject.emoji);
   };
 
   const handleChangeMedias = (e) => {
@@ -333,8 +319,9 @@ const MessageInput = ({ ticketStatus }) => {
     }
   };
 
-  const handleUploadMedia = async () => {
+  const handleUploadMedia = async (e) => {
     setLoading(true);
+    e.preventDefault();
     const formData = new FormData();
     formData.append("fromMe", true);
     medias.forEach((media) => {
@@ -355,12 +342,7 @@ const MessageInput = ({ ticketStatus }) => {
     setMedias([]);
   };
 
-  const handleSendMessage = async (e) => {
-    if (e) e.preventDefault();
-    if (medias.length > 0) {
-      await handleUploadMedia();
-      return;
-    }
+  const handleSendMessage = async () => {
     if (inputMessage.trim() === "") return;
     setLoading(true);
     const message = {
@@ -379,6 +361,7 @@ const MessageInput = ({ ticketStatus }) => {
         await api.post(`/messages/edit/${editingMessage.id}`, message);
       } else {
         await api.post(`/messages/${ticketId}`, message);
+
       }
     } catch (err) {
       toastError(err);
@@ -593,16 +576,8 @@ const MessageInput = ({ ticketStatus }) => {
             </IconButton>
             {showEmoji ? (
               <div className={classes.emojiBox}>
-                <ClickAwayListener onClickAway={() => setShowEmoji(false)}>
-                  {emojiData ? (
-                    <Picker
-                      data={emojiData}
-                      onEmojiSelect={handleAddEmoji}
-                      theme="dark"
-                    />
-                  ) : (
-                    <div>Loading...</div>
-                  )}
+                <ClickAwayListener onClickAway={(e) => setShowEmoji(false)}>
+                  <EmojiPicker onEmojiClick={handleAddEmoji} />
                 </ClickAwayListener>
               </div>
             ) : null}
@@ -729,7 +704,7 @@ const MessageInput = ({ ticketStatus }) => {
               onKeyPress={(e) => {
                 if (loading || e.shiftKey) return;
                 else if (e.key === "Enter") {
-                  handleSendMessage(e);
+                  handleSendMessage();
                 }
               }}
             />
