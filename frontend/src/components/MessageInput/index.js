@@ -321,9 +321,8 @@ const MessageInput = ({ ticketStatus }) => {
     }
   };
 
-  const handleUploadMedia = async (e) => {
+  const handleUploadMedia = async () => {
     setLoading(true);
-    e.preventDefault();
     const formData = new FormData();
     formData.append("fromMe", true);
     medias.forEach((media) => {
@@ -344,7 +343,12 @@ const MessageInput = ({ ticketStatus }) => {
     setMedias([]);
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = async (e) => {
+    if (e) e.preventDefault();
+    if (medias.length > 0) {
+      await handleUploadMedia();
+      return;
+    }
     if (inputMessage.trim() === "") return;
     setLoading(true);
     const message = {
@@ -363,7 +367,6 @@ const MessageInput = ({ ticketStatus }) => {
         await api.post(`/messages/edit/${editingMessage.id}`, message);
       } else {
         await api.post(`/messages/${ticketId}`, message);
-
       }
     } catch (err) {
       toastError(err);
@@ -713,11 +716,7 @@ const MessageInput = ({ ticketStatus }) => {
               onKeyPress={(e) => {
                 if (loading || e.shiftKey) return;
                 else if (e.key === "Enter") {
-                  if (medias.length > 0) {
-                    handleUploadMedia(e);
-                  } else {
-                    handleSendMessage();
-                  }
+                  handleSendMessage(e);
                 }
               }}
             />
