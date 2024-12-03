@@ -18,6 +18,7 @@
     "@testing-library/user-event": "^12.1.7",
     "axios": "^0.21.1",
     "date-fns": "^2.16.1",
+    "@emoji-mart/react": "^1.1.1",
     "emoji-mart": "^5.6.0",
     "formik": "^2.2.0",
     "i18next": "^19.8.2",
