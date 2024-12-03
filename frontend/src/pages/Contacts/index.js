@@ -15,9 +15,7 @@ import {
   TableCell,
   TableHead,
   TableRow,
-  Tooltip,
-  TextField,
-  Grid
+  Tooltip
 } from "@material-ui/core";
 
 import {
@@ -97,7 +95,6 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     margin: theme.spacing(1),
     overflowY: "scroll",
-    borderRadius: "13px",
     ...theme.scrollbarStyles,
   },
   csvbtn: {
@@ -112,24 +109,6 @@ const useStyles = makeStyles((theme) => ({
     maxWidth: "36px",
     maxHeight: "36px",
     padding: theme.spacing(1),
-  },
-  searchFilterContainer: {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: theme.spacing(2),
-  },
-  searchInput: {
-    marginRight: theme.spacing(2),
-    padding: '13px',
-    border: '1px solid #ccc',
-    borderRadius: '13px',
-    flex: 1,
-    width: '50%',
-  },
-  tagsFilter: {
-    flex: 1,
-    width: '50%',
-    borderRadius: '13px',
   },
 }));
 
@@ -157,47 +136,45 @@ const Contacts = () => {
   }, [searchParam]);
 
   useEffect(() => {
-    let delayDebounceFn;
-    if (!loading) {
-      setLoading(true);
-      delayDebounceFn = setTimeout(async () => {
+    setLoading(true);
+    const delayDebounceFn = setTimeout(() => {
+      const fetchContacts = async () => {
         try {
           const { data } = await api.get("/contacts/", {
             params: { searchParam, pageNumber },
           });
+
           const filteredContacts = data.contacts.filter(contact => {
             if (filteredTags.length === 0) return true;
-            return contact.tags && contact.tags.length > 0 && 
-              filteredTags.every(tag => contact.tags.some(ctag => ctag.id === tag.id));
+            return contact.tags && contact.tags.length > 0 && filteredTags.every(tag => contact.tags.some(ctag => ctag.id === tag.id));
           });
+
           dispatch({ type: "LOAD_CONTACTS", payload: filteredContacts });
           setHasMore(data.hasMore);
+          setLoading(false);
         } catch (err) {
           toastError(err);
-        } finally {
-          setLoading(false);
         }
-      }, 500);
-    }
+      };
+      fetchContacts();
+    }, 500);
     return () => clearTimeout(delayDebounceFn);
   }, [searchParam, pageNumber, filteredTags]);
 
   useEffect(() => {
     const socket = openSocket();
-    
-    const handleUpdate = (data) => {
+
+    socket.on("contact", (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_CONTACTS", payload: data.contact });
       }
+
       if (data.action === "delete") {
         dispatch({ type: "DELETE_CONTACT", payload: +data.contactId });
       }
-    };
-
-    socket.on("contact", handleUpdate);
+    });
 
     return () => {
-      socket.off("contact", handleUpdate);
       socket.disconnect();
     };
   }, []);
@@ -206,9 +183,9 @@ const Contacts = () => {
     setFilteredTags(tags);
   };
 
-  const handleSearch = (event) => {
-    setSearchParam(event.target.value.toLowerCase());
-  };
+   const handleSearch = (event) => {
+     setSearchParam(event.target.value.toLowerCase());
+   };
 
   const handleOpenContactModal = () => {
     setSelectedContactId(null);
@@ -255,7 +232,7 @@ const Contacts = () => {
     }
     setDeletingAllContact(null);
     setSearchParam("");
-    setPageNumber(1);
+    setPageNumber();
   };
 
   const handleimportContact = async () => {
@@ -398,21 +375,7 @@ const Contacts = () => {
           />
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <Grid container spacing={2} className={classes.searchFilterContainer}>
-        <Grid item xs={12} sm={6}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Buscar contatos"
-            value={searchParam}
-            onChange={handleSearch}
-            className={classes.searchInput}
-          />
-        </Grid>
-        <Grid item xs={12} sm={6}>
-          <TagsFilter onFiltered={handleTagFilter} className={classes.tagsFilter} />
-        </Grid>
-      </Grid>
+      <TagsFilter onFiltered={handleTagFilter} />
       <Paper
         className={classes.mainPaper}
         variant="outlined"
@@ -496,7 +459,7 @@ const Contacts = () => {
           </TableBody>
         </Table>
       </Paper>
-    </MainContainer>
+    </MainContainer >
   );
 };
 
