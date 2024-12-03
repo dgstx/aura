@@ -713,7 +713,11 @@ const MessageInput = ({ ticketStatus }) => {
               onKeyPress={(e) => {
                 if (loading || e.shiftKey) return;
                 else if (e.key === "Enter") {
-                  handleSendMessage();
+                  if (medias.length > 0) {
+                    handleUploadMedia(e);
+                  } else {
+                    handleSendMessage();
+                  }
                 }
               }}
             />
