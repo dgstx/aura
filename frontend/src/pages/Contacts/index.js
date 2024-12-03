@@ -95,6 +95,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2),
     margin: theme.spacing(1),
     overflowY: "scroll",
+    borderRadius: 13,
     ...theme.scrollbarStyles,
   },
   csvbtn: {
@@ -106,10 +107,42 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: "25%"
   },
   buttonSize: {
-    maxWidth: "36px",
+    maxWidth: "36px", 
     maxHeight: "36px",
     padding: theme.spacing(1),
+    borderRadius: 8
   },
+  tableContainer: {
+    borderRadius: 13,
+    padding: theme.spacing(1),
+    "& .MuiTableCell-root": {
+      padding: theme.spacing(1),
+    }
+  },
+  tagsWrapper: {
+    padding: theme.spacing(1),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: 13,
+  },
+  mainHeader: {
+    padding: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(1),
+    }
+  },
+  responsiveButtons: {
+    [theme.breakpoints.down('sm')]: {
+      display: 'flex',
+      flexDirection: 'column',
+      gap: theme.spacing(1)
+    }
+  },
+  tableCell: {
+    [theme.breakpoints.down('sm')]: {
+      padding: theme.spacing(1),
+    }
+  }
 }));
 
 const Contacts = () => {
@@ -302,9 +335,9 @@ const Contacts = () => {
               : `${i18n.t("contacts.confirmationModal.importMessage")}`
         }
       </ConfirmationModal>
-      <MainHeader>
+      <MainHeader className={classes.mainHeader}>
         <Title>{i18n.t("contacts.title")} ({contacts.length})</Title>
-        <MainHeaderButtonsWrapper>
+        <MainHeaderButtonsWrapper className={classes.responsiveButtons}>
           <Can
             role={user.profile}
             perform="drawer-admin-items:view"
@@ -375,26 +408,28 @@ const Contacts = () => {
           />
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <TagsFilter onFiltered={handleTagFilter} />
-      <Paper
-        className={classes.mainPaper}
-        variant="outlined"
+      <div className={classes.tagsWrapper}>
+        <TagsFilter onFiltered={handleTagFilter} />
+      </div>
+      <Paper 
+        className={`${classes.mainPaper} ${classes.tableContainer}`}
+        variant="outlined" 
         onScroll={handleScroll}
       >
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox" />
-              <TableCell>
+              <TableCell padding="checkbox" className={classes.tableCell} />
+              <TableCell className={classes.tableCell}>
                 {i18n.t("contacts.table.name")}
               </TableCell>
-              <TableCell align="center">
+              <TableCell align="center" className={classes.tableCell}>
                 {i18n.t("contacts.table.whatsapp")}
               </TableCell>
-              <TableCell align="center">
+              <TableCell align="center" className={classes.tableCell}>
                 {i18n.t("contacts.table.email")}
               </TableCell>
-              <TableCell align="center">
+              <TableCell align="center" className={classes.tableCell}>
                 {i18n.t("contacts.table.actions")}
               </TableCell>
             </TableRow>
@@ -412,15 +447,15 @@ const Contacts = () => {
                 })
                 .map((contact) => (
                   <TableRow key={contact.id}>
-                    <TableCell style={{ paddingRight: 0 }}>
+                    <TableCell style={{ paddingRight: 0 }} className={classes.tableCell}>
                       {<Avatar src={contact.profilePicUrl} className={classes.avatar} />}
                     </TableCell>
-                    <TableCell>{contact.name}</TableCell>
-                    <TableCell align="center">
+                    <TableCell className={classes.tableCell}>{contact.name}</TableCell>
+                    <TableCell align="center" className={classes.tableCell}>
                       {user.isTricked === "enabled" ? formatPhoneNumber(contact.number) : formatPhoneNumber(contact.number).slice(0, -4) + "****"}
                     </TableCell>
-                    <TableCell align="center">{contact.email}</TableCell>
-                    <TableCell align="center">
+                    <TableCell align="center" className={classes.tableCell}>{contact.email}</TableCell>
+                    <TableCell align="center" className={classes.tableCell}>
                       <IconButton
                         size="small"
                         onClick={() => {
