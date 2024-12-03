@@ -321,7 +321,7 @@ const MessageInput = ({ ticketStatus }) => {
 
   const handleUploadMedia = async (e) => {
     setLoading(true);
-    e.preventDefault();
+    if (e) e.preventDefault();
     const formData = new FormData();
     formData.append("fromMe", true);
     medias.forEach((media) => {
@@ -705,7 +705,7 @@ const MessageInput = ({ ticketStatus }) => {
                 if (loading || e.shiftKey) return;
                 else if (e.key === "Enter") {
                   if (medias.length > 0) {
-                    handleUploadMedia(e);
+                    handleUploadMedia();
                   } else {
                     handleSendMessage();
                   }
