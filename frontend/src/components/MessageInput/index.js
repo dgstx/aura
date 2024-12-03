@@ -336,10 +336,10 @@ const MessageInput = ({ ticketStatus }) => {
       }
     } catch (err) {
       toastError(err);
+    } finally {
+      setLoading(false);
+      setMedias([]);
     }
-
-    setLoading(false);
-    setMedias([]);
   };
 
   const handleSendMessage = async () => {
@@ -365,12 +365,13 @@ const MessageInput = ({ ticketStatus }) => {
       }
     } catch (err) {
       toastError(err);
+    } finally {
+      setInputMessage("");
+      setShowEmoji(false);
+      setLoading(false);
+      setReplyingMessage(null);
+      setEditingMessage(null);
     }
-    setInputMessage("");
-    setShowEmoji(false);
-    setLoading(false);
-    setReplyingMessage(null);
-    setEditingMessage(null);
   };
 
   const handleStartRecording = async () => {
@@ -703,8 +704,7 @@ const MessageInput = ({ ticketStatus }) => {
               }}
               onKeyPress={(e) => {
                 if (loading || e.shiftKey) return;
-                if (e.key === "Enter") {
-                  e.preventDefault(); // Adiciona esta linha para evitar o comportamento padrão
+                else if (e.key === "Enter") {
                   if (medias.length > 0) {
                     handleUploadMedia();
                   } else {
