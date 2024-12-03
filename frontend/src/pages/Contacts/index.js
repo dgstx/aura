@@ -133,7 +133,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Contacts = ({ user, contacts, loading }) => {
+const Contacts = () => {
   const classes = useStyles();
   const history = useHistory();
   const { user } = useContext(AuthContext);
@@ -157,45 +157,47 @@ const Contacts = ({ user, contacts, loading }) => {
   }, [searchParam]);
 
   useEffect(() => {
-    setLoading(true);
-    const delayDebounceFn = setTimeout(() => {
-      const fetchContacts = async () => {
+    let delayDebounceFn;
+    if (!loading) {
+      setLoading(true);
+      delayDebounceFn = setTimeout(async () => {
         try {
           const { data } = await api.get("/contacts/", {
             params: { searchParam, pageNumber },
           });
-
           const filteredContacts = data.contacts.filter(contact => {
             if (filteredTags.length === 0) return true;
-            return contact.tags && contact.tags.length > 0 && filteredTags.every(tag => contact.tags.some(ctag => ctag.id === tag.id));
+            return contact.tags && contact.tags.length > 0 && 
+              filteredTags.every(tag => contact.tags.some(ctag => ctag.id === tag.id));
           });
-
           dispatch({ type: "LOAD_CONTACTS", payload: filteredContacts });
           setHasMore(data.hasMore);
-          setLoading(false);
         } catch (err) {
           toastError(err);
+        } finally {
+          setLoading(false);
         }
-      };
-      fetchContacts();
-    }, 500);
+      }, 500);
+    }
     return () => clearTimeout(delayDebounceFn);
   }, [searchParam, pageNumber, filteredTags]);
 
   useEffect(() => {
     const socket = openSocket();
-
-    socket.on("contact", (data) => {
+    
+    const handleUpdate = (data) => {
       if (data.action === "update" || data.action === "create") {
         dispatch({ type: "UPDATE_CONTACTS", payload: data.contact });
       }
-
       if (data.action === "delete") {
         dispatch({ type: "DELETE_CONTACT", payload: +data.contactId });
       }
-    });
+    };
+
+    socket.on("contact", handleUpdate);
 
     return () => {
+      socket.off("contact", handleUpdate);
       socket.disconnect();
     };
   }, []);
@@ -253,7 +255,7 @@ const Contacts = ({ user, contacts, loading }) => {
     }
     setDeletingAllContact(null);
     setSearchParam("");
-    setPageNumber();
+    setPageNumber(1);
   };
 
   const handleimportContact = async () => {
