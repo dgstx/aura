@@ -329,17 +329,13 @@ const MessageInput = ({ ticketStatus }) => {
       formData.append("body", media.name);
     });
     try {
-      if (channelType !== null) {
-        await api.post(`/hub-message/${ticketId}`, formData);
-      } else {
-        await api.post(`/messages/${ticketId}`, formData);
-      }
+      await api.post(`/messages/${ticketId}`, formData);
     } catch (err) {
       toastError(err);
+    } finally {
+      setLoading(false);
+      setMedias([]);
     }
-
-    setLoading(false);
-    setMedias([]);
   };
 
   const handleSendMessage = async () => {
@@ -355,22 +351,20 @@ const MessageInput = ({ ticketStatus }) => {
       quotedMsg: replyingMessage,
     };
     try {
-      if (channelType !== null) {
-        await api.post(`/hub-message/${ticketId}`, message);
-      } else if (editingMessage !== null) {
+      if (editingMessage !== null) {
         await api.post(`/messages/edit/${editingMessage.id}`, message);
       } else {
         await api.post(`/messages/${ticketId}`, message);
-
       }
     } catch (err) {
       toastError(err);
+    } finally {
+      setInputMessage("");
+      setShowEmoji(false);
+      setLoading(false);
+      setReplyingMessage(null);
+      setEditingMessage(null);
     }
-    setInputMessage("");
-    setShowEmoji(false);
-    setLoading(false);
-    setReplyingMessage(null);
-    setEditingMessage(null);
   };
 
   const handleStartRecording = async () => {
@@ -449,6 +443,17 @@ const MessageInput = ({ ticketStatus }) => {
 
   const handleMenuItemClick = (event) => {
     setAnchorEl(null);
+  };
+
+  const handleKeyPress = (e) => {
+    if (loading || e.shiftKey) return;
+    if (e.key === "Enter") {
+      if (medias.length > 0) {
+        handleUploadMedia();
+      } else {
+        handleSendMessage();
+      }
+    }
   };
 
   const renderReplyingMessage = (message) => {
@@ -701,16 +706,7 @@ const MessageInput = ({ ticketStatus }) => {
               onPaste={(e) => {
                 ticketStatus === "open" && handleInputPaste(e);
               }}
-              onKeyPress={(e) => {
-                if (loading || e.shiftKey) return;
-                else if (e.key === "Enter") {
-                  if (medias.length > 0) {
-                    handleUploadMedia();
-                  } else {
-                    handleSendMessage();
-                  }
-                }
-              }}
+              onKeyPress={handleKeyPress}
             />
             {typeBar ? (
               <ul className={classes.messageQuickAnswersWrapper}>
@@ -736,7 +732,7 @@ const MessageInput = ({ ticketStatus }) => {
             <IconButton
               aria-label="sendMessage"
               component="span"
-              onClick={handleSendMessage}
+              onClick={medias.length > 0 ? handleUploadMedia : handleSendMessage}
               disabled={loading}
             >
               <Send className={classes.sendMessageIcons} />
