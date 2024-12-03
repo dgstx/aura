@@ -32,7 +32,7 @@ import {
 } from "@material-ui/icons";
 import clsx from "clsx";
 import { Picker } from "@emoji-mart/react";
-import '@emoji-mart/react/dist/emoji-mart.css';
+import "@emoji-mart/css/emoji-mart.css";
 import MicRecorder from "mic-recorder-to-mp3";
 import PropTypes from "prop-types";
 import React, {
@@ -225,6 +225,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const fetchEmojiData = async () => {
+  const response = await fetch('https://cdn.jsdelivr.net/npm/@emoji-mart/data');
+  return response.json();
+};
+
 const MessageInput = ({ ticketStatus }) => {
   const classes = useStyles();
   const { ticketId } = useParams();
@@ -243,6 +248,7 @@ const MessageInput = ({ ticketStatus }) => {
   const { user } = useContext(AuthContext);
   const [signMessage, setSignMessage] = useLocalStorage("signOption", true);
   const [channelType, setChannelType] = useState(null);
+  const [emojiData, setEmojiData] = useState(null);
 
   useEffect(() => {
     inputRef.current.focus();
@@ -278,6 +284,14 @@ const MessageInput = ({ ticketStatus }) => {
     }, 10000);
     // eslint-disable-next-line
   }, [onDragEnter === true]);
+
+  useEffect(() => {
+    const getData = async () => {
+      const data = await fetchEmojiData();
+      setEmojiData(data);
+    };
+    getData();
+  }, []);
 
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -580,12 +594,16 @@ const MessageInput = ({ ticketStatus }) => {
             </IconButton>
             {showEmoji ? (
               <div className={classes.emojiBox}>
-                <ClickAwayListener onClickAway={(e) => setShowEmoji(true)}>
-                  <Picker
-                    data={require('@emoji-mart/data')}
-                    onEmojiSelect={handleAddEmoji}
-                    theme="dark"
-                  />
+                <ClickAwayListener onClickAway={() => setShowEmoji(false)}>
+                  {emojiData ? (
+                    <Picker
+                      data={emojiData}
+                      onEmojiSelect={handleAddEmoji}
+                      theme="dark"
+                    />
+                  ) : (
+                    <div>Loading...</div>
+                  )}
                 </ClickAwayListener>
               </div>
             ) : null}
