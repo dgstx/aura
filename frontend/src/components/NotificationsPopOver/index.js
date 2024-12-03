@@ -8,6 +8,8 @@ import ListItemText from "@material-ui/core/ListItemText";
 import Popover from "@material-ui/core/Popover";
 import { makeStyles } from "@material-ui/core/styles";
 import ChatIcon from "@material-ui/icons/Chat";
+import VolumeOffIcon from "@material-ui/icons/VolumeOff";
+import VolumeUpIcon from "@material-ui/icons/VolumeUp";
 import { format } from "date-fns";
 import { useHistory } from "react-router-dom";
 import useSound from "use-sound";
@@ -48,10 +50,13 @@ const NotificationsPopOver = () => {
 	const anchorEl = useRef();
 	const [isOpen, setIsOpen] = useState(false);
 	const [notifications, setNotifications] = useState([]);
+	const [isAudioEnabled, setIsAudioEnabled] = useState(
+		localStorage.getItem("userAudioEnabled") === "true"
+	);
 	const [, setDesktopNotifications] = useState([]);
 
 	const { tickets } = useTickets({ withUnreadMessages: "true" });
-	const [play] = useSound(alertSound, { soundEnabled: true });
+	const [play, { stop }] = useSound(alertSound, { soundEnabled: isAudioEnabled });
 	const soundAlertRef = useRef();
 
 	const historyRef = useRef(history);
@@ -106,10 +111,10 @@ const NotificationsPopOver = () => {
 			return [notification, ...prevState];
 		});
 
-		if (soundAlertRef.current) {
+		if (isAudioEnabled && soundAlertRef.current) {
 			soundAlertRef.current();
 		}
-	}, []);
+	}, [isAudioEnabled]);
 
 	useEffect(() => {
 		const socket = openSocket();
@@ -175,6 +180,16 @@ const NotificationsPopOver = () => {
 		};
 	}, [user, handleNotifications]);
 
+	const toggleAudio = () => {
+		const newAudioStatus = !isAudioEnabled;
+		setIsAudioEnabled(newAudioStatus);
+		localStorage.setItem("userAudioEnabled", newAudioStatus.toString());
+
+		if (!newAudioStatus) {
+			stop();
+		}
+	};
+
 	const handleClick = () => {
 		setIsOpen(prevState => !prevState);
 	};
@@ -189,6 +204,9 @@ const NotificationsPopOver = () => {
 
 	return (
 		<>
+			<IconButton onClick={toggleAudio} aria-label="Toggle Sound" color="inherit">
+				{isAudioEnabled ? <VolumeUpIcon /> : <VolumeOffIcon />}
+			</IconButton>
 			<IconButton
 				onClick={handleClick}
 				ref={anchorEl}

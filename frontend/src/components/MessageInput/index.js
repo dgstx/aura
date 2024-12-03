@@ -336,10 +336,10 @@ const MessageInput = ({ ticketStatus }) => {
       }
     } catch (err) {
       toastError(err);
-    } finally {
-      setLoading(false);
-      setMedias([]);
     }
+
+    setLoading(false);
+    setMedias([]);
   };
 
   const handleSendMessage = async () => {
@@ -365,13 +365,12 @@ const MessageInput = ({ ticketStatus }) => {
       }
     } catch (err) {
       toastError(err);
-    } finally {
-      setInputMessage("");
-      setShowEmoji(false);
-      setLoading(false);
-      setReplyingMessage(null);
-      setEditingMessage(null);
     }
+    setInputMessage("");
+    setShowEmoji(false);
+    setLoading(false);
+    setReplyingMessage(null);
+    setEditingMessage(null);
   };
 
   const handleStartRecording = async () => {
