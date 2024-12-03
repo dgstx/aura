@@ -31,8 +31,8 @@ import {
   Send
 } from "@material-ui/icons";
 import clsx from "clsx";
-import { Picker } from "emoji-mart";
-import "emoji-mart/css/emoji-mart.css";
+import { Picker } from "@emoji-mart/react";
+import "@emoji-mart/css/emoji-mart.css";
 import MicRecorder from "mic-recorder-to-mp3";
 import PropTypes from "prop-types";
 import React, {
@@ -293,9 +293,8 @@ const MessageInput = ({ ticketStatus }) => {
     setTypeBar(false);
   };
 
-  const handleAddEmoji = (e) => {
-    let emoji = e.native;
-    setInputMessage((prevState) => prevState + emoji);
+  const handleAddEmoji = (emoji) => {
+    setInputMessage((prevState) => prevState + emoji.native);
   };
 
   const handleChangeMedias = (e) => {
@@ -583,12 +582,9 @@ const MessageInput = ({ ticketStatus }) => {
               <div className={classes.emojiBox}>
                 <ClickAwayListener onClickAway={(e) => setShowEmoji(true)}>
                   <Picker
-                    perLine={16}
-                    theme={"dark"}
-                    i18n={i18n}
-                    showPreview={true}
-                    showSkinTones={false}
-                    onSelect={handleAddEmoji}
+                    data={require('@emoji-mart/data')}
+                    onEmojiSelect={handleAddEmoji}
+                    theme="dark"
                   />
                 </ClickAwayListener>
               </div>
