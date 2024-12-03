@@ -703,7 +703,8 @@ const MessageInput = ({ ticketStatus }) => {
               }}
               onKeyPress={(e) => {
                 if (loading || e.shiftKey) return;
-                else if (e.key === "Enter") {
+                if (e.key === "Enter") {
+                  e.preventDefault(); // Adiciona esta linha para evitar o comportamento padrão
                   if (medias.length > 0) {
                     handleUploadMedia();
                   } else {
