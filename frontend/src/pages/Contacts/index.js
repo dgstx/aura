@@ -25,7 +25,8 @@ import {
   DeleteOutline,
   Edit,
   ImportContacts,
-  WhatsApp
+  WhatsApp,
+  Search as SearchIcon
 } from "@material-ui/icons";
 
 import api from "../../services/api";
@@ -142,7 +143,25 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down('sm')]: {
       padding: theme.spacing(1),
     }
-  }
+  },
+  search: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: theme.spacing(1),
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: 13,
+  },
+  searchIcon: {
+    marginRight: theme.spacing(1),
+  },
+  searchInput: {
+    flex: 1,
+    border: 'none',
+    outline: 'none',
+    padding: theme.spacing(1),
+    borderRadius: 4,
+  },
 }));
 
 const Contacts = () => {
@@ -178,8 +197,12 @@ const Contacts = () => {
           });
 
           const filteredContacts = data.contacts.filter(contact => {
-            if (filteredTags.length === 0) return true;
-            return contact.tags && contact.tags.length > 0 && filteredTags.every(tag => contact.tags.some(ctag => ctag.id === tag.id));
+            const searchLower = searchParam.toLowerCase();
+            const matchesSearch = contact.name.toLowerCase().includes(searchLower) ||
+                                  contact.number.includes(searchLower) ||
+                                  (contact.email && contact.email.toLowerCase().includes(searchLower)) ||
+                                  (contact.tags && contact.tags.some(tag => tag.name.toLowerCase().includes(searchLower)));
+            return matchesSearch;
           });
 
           dispatch({ type: "LOAD_CONTACTS", payload: filteredContacts });
@@ -192,7 +215,7 @@ const Contacts = () => {
       fetchContacts();
     }, 500);
     return () => clearTimeout(delayDebounceFn);
-  }, [searchParam, pageNumber, filteredTags]);
+  }, [searchParam, pageNumber]);
 
   useEffect(() => {
     const socket = openSocket();
@@ -408,8 +431,15 @@ const Contacts = () => {
           />
         </MainHeaderButtonsWrapper>
       </MainHeader>
-      <div className={classes.tagsWrapper}>
-        <TagsFilter onFiltered={handleTagFilter} />
+      <div className={classes.search}>
+        <SearchIcon className={classes.searchIcon} />
+        <input
+          type="text"
+          placeholder={i18n.t("contacts.searchPlaceholder")}
+          className={classes.searchInput}
+          value={searchParam}
+          onChange={handleSearch}
+        />
       </div>
       <Paper 
         className={`${classes.mainPaper} ${classes.tableContainer}`}
