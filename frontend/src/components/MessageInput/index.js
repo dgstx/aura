@@ -31,7 +31,7 @@ import {
   Send
 } from "@material-ui/icons";
 import clsx from "clsx";
-import { Picker } from "@emoji-mart/react";
+import { Picker } from "emoji-mart";
 import MicRecorder from "mic-recorder-to-mp3";
 import PropTypes from "prop-types";
 import React, {
